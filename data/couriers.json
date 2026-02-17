@@ -1,0 +1,62 @@
+[
+  {
+    "id": "courier-1",
+    "status": "Free",
+    "transportType": "walker",
+    "maxWeight": 5,
+    "completedOrdersToday": 0,
+    "currentOrderId": null,
+    "coordinates": {
+      "x": 90,
+      "y": 62
+    }
+  },
+  {
+    "id": "courier-2",
+    "status": "Free",
+    "transportType": "bicycle",
+    "maxWeight": 15,
+    "completedOrdersToday": 0,
+    "currentOrderId": null,
+    "coordinates": {
+      "x": 87,
+      "y": 94
+    }
+  },
+  {
+    "id": "courier-3",
+    "status": "Free",
+    "transportType": "bicycle",
+    "maxWeight": 15,
+    "completedOrdersToday": 0,
+    "currentOrderId": null,
+    "coordinates": {
+      "x": 30,
+      "y": 78
+    }
+  },
+  {
+    "id": "courier-4",
+    "status": "Free",
+    "transportType": "scooter",
+    "maxWeight": 50,
+    "completedOrdersToday": 0,
+    "currentOrderId": null,
+    "coordinates": {
+      "x": 52,
+      "y": 61
+    }
+  },
+  {
+    "id": "courier-5",
+    "status": "Free",
+    "transportType": "car",
+    "maxWeight": 50,
+    "completedOrdersToday": 0,
+    "currentOrderId": null,
+    "coordinates": {
+      "x": 88,
+      "y": 80
+    }
+  }
+]

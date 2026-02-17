@@ -3,18 +3,14 @@
  */
 class OrderQueue {
   constructor() {
-    this._queue = []; // Масив замовлень у черзі
+    this._queue = [];
   }
 
-  /**
-   * Додати замовлення в чергу
-   */
   enqueue(order) {
     if (!order || !order.id) {
       throw new Error('Invalid order');
     }
 
-    // Перевірити чи замовлення вже в черзі
     if (this._queue.find(o => o.id === order.id)) {
       throw new Error(`Order ${order.id} is already in queue`);
     }
@@ -25,9 +21,6 @@ class OrderQueue {
     });
   }
 
-  /**
-   * Взяти перше замовлення з черги (FIFO)
-   */
   dequeue() {
     if (this._queue.length === 0) {
       return null;
@@ -37,9 +30,6 @@ class OrderQueue {
     return item.order;
   }
 
-  /**
-   * Подивитися перше замовлення без видалення
-   */
   peek() {
     if (this._queue.length === 0) {
       return null;
@@ -48,23 +38,14 @@ class OrderQueue {
     return this._queue[0].order;
   }
 
-  /**
-   * Отримати розмір черги
-   */
   size() {
     return this._queue.length;
   }
 
-  /**
-   * Перевірити чи черга порожня
-   */
   isEmpty() {
     return this._queue.length === 0;
   }
 
-  /**
-   * Отримати всі замовлення в черзі
-   */
   getAll() {
     return this._queue.map(item => ({
       order: item.order,
@@ -73,9 +54,6 @@ class OrderQueue {
     }));
   }
 
-  /**
-   * Видалити замовлення з черги за ID
-   */
   remove(orderId) {
     const index = this._queue.findIndex(item => item.order.id === orderId);
     if (index !== -1) {
@@ -85,16 +63,10 @@ class OrderQueue {
     return null;
   }
 
-  /**
-   * Очистити чергу
-   */
   clear() {
     this._queue = [];
   }
 
-  /**
-   * Отримати статистику черги
-   */
   getStats() {
     if (this._queue.length === 0) {
       return {
@@ -116,9 +88,6 @@ class OrderQueue {
     };
   }
 
-  /**
-   * Експорт у JSON
-   */
   toJSON() {
     return {
       size: this._queue.length,
