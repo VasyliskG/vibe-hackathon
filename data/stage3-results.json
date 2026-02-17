@@ -1,0 +1,1282 @@
+{
+  "timestamp": "2026-02-17T17:50:21.804Z",
+  "version": "Stage 3 MVP",
+  "features": [
+    "Priority by completed orders",
+    "Automatic queue management",
+    "Distance threshold for priority",
+    "Auto-assignment from queue on completion"
+  ],
+  "config": {
+    "distanceThreshold": 1,
+    "mapSize": 100,
+    "walkableCells": 8572
+  },
+  "couriers": [
+    {
+      "id": "courier-1",
+      "status": "Free",
+      "transportType": "walker",
+      "maxWeight": 5,
+      "completedOrdersToday": 6,
+      "currentOrderId": null,
+      "coordinates": {
+        "x": 15,
+        "y": 30
+      }
+    },
+    {
+      "id": "courier-2",
+      "status": "Free",
+      "transportType": "bicycle",
+      "maxWeight": 15,
+      "completedOrdersToday": 3,
+      "currentOrderId": null,
+      "coordinates": {
+        "x": 51,
+        "y": 78
+      }
+    },
+    {
+      "id": "courier-3",
+      "status": "Busy",
+      "transportType": "bicycle",
+      "maxWeight": 15,
+      "completedOrdersToday": 9,
+      "currentOrderId": "order-6",
+      "coordinates": {
+        "x": 49,
+        "y": 94
+      }
+    },
+    {
+      "id": "courier-4",
+      "status": "Busy",
+      "transportType": "scooter",
+      "maxWeight": 50,
+      "completedOrdersToday": 3,
+      "currentOrderId": "order-1",
+      "coordinates": {
+        "x": 98,
+        "y": 48
+      }
+    },
+    {
+      "id": "courier-5",
+      "status": "Busy",
+      "transportType": "car",
+      "maxWeight": 50,
+      "completedOrdersToday": 1,
+      "currentOrderId": "order-3",
+      "coordinates": {
+        "x": 30,
+        "y": 14
+      }
+    }
+  ],
+  "orders": [
+    {
+      "id": "order-1",
+      "location": {
+        "x": 79,
+        "y": 27
+      },
+      "weight": 3,
+      "assignedCourierId": "courier-4"
+    },
+    {
+      "id": "order-2",
+      "location": {
+        "x": 62,
+        "y": 82
+      },
+      "weight": 4,
+      "assignedCourierId": "courier-2"
+    },
+    {
+      "id": "order-3",
+      "location": {
+        "x": 89,
+        "y": 28
+      },
+      "weight": 10,
+      "assignedCourierId": "courier-5"
+    },
+    {
+      "id": "order-4",
+      "location": {
+        "x": 69,
+        "y": 62
+      },
+      "weight": 12,
+      "assignedCourierId": "courier-3"
+    },
+    {
+      "id": "order-5",
+      "location": {
+        "x": 96,
+        "y": 86
+      },
+      "weight": 25,
+      "assignedCourierId": null
+    },
+    {
+      "id": "order-6",
+      "location": {
+        "x": 99,
+        "y": 98
+      },
+      "weight": 8,
+      "assignedCourierId": "courier-3"
+    },
+    {
+      "id": "order-7",
+      "location": {
+        "x": 12,
+        "y": 81
+      },
+      "weight": 5,
+      "assignedCourierId": "courier-1"
+    },
+    {
+      "id": "order-8",
+      "location": {
+        "x": 34,
+        "y": 94
+      },
+      "weight": 35,
+      "assignedCourierId": null
+    }
+  ],
+  "assignments": [
+    {
+      "orderId": "order-1",
+      "assignedCourierId": "courier-4",
+      "courierTransportType": "scooter",
+      "courierMaxWeight": 50,
+      "courierCompletedToday": 3,
+      "orderWeight": 3,
+      "distance": 40,
+      "distanceType": "pathfinding",
+      "queued": false,
+      "path": [
+        {
+          "x": 79,
+          "y": 27
+        },
+        {
+          "x": 80,
+          "y": 27
+        },
+        {
+          "x": 81,
+          "y": 27
+        },
+        {
+          "x": 82,
+          "y": 27
+        },
+        {
+          "x": 83,
+          "y": 27
+        },
+        {
+          "x": 83,
+          "y": 28
+        },
+        {
+          "x": 84,
+          "y": 28
+        },
+        {
+          "x": 84,
+          "y": 29
+        },
+        {
+          "x": 85,
+          "y": 29
+        },
+        {
+          "x": 85,
+          "y": 30
+        },
+        {
+          "x": 85,
+          "y": 31
+        },
+        {
+          "x": 86,
+          "y": 31
+        },
+        {
+          "x": 87,
+          "y": 31
+        },
+        {
+          "x": 88,
+          "y": 31
+        },
+        {
+          "x": 89,
+          "y": 31
+        },
+        {
+          "x": 90,
+          "y": 31
+        },
+        {
+          "x": 91,
+          "y": 31
+        },
+        {
+          "x": 92,
+          "y": 31
+        },
+        {
+          "x": 93,
+          "y": 31
+        },
+        {
+          "x": 94,
+          "y": 31
+        },
+        {
+          "x": 94,
+          "y": 32
+        },
+        {
+          "x": 94,
+          "y": 33
+        },
+        {
+          "x": 95,
+          "y": 33
+        },
+        {
+          "x": 96,
+          "y": 33
+        },
+        {
+          "x": 96,
+          "y": 34
+        },
+        {
+          "x": 97,
+          "y": 34
+        },
+        {
+          "x": 98,
+          "y": 34
+        },
+        {
+          "x": 98,
+          "y": 35
+        },
+        {
+          "x": 98,
+          "y": 36
+        },
+        {
+          "x": 98,
+          "y": 37
+        },
+        {
+          "x": 98,
+          "y": 38
+        },
+        {
+          "x": 98,
+          "y": 39
+        },
+        {
+          "x": 98,
+          "y": 40
+        },
+        {
+          "x": 98,
+          "y": 41
+        },
+        {
+          "x": 98,
+          "y": 42
+        },
+        {
+          "x": 98,
+          "y": 43
+        },
+        {
+          "x": 98,
+          "y": 44
+        },
+        {
+          "x": 98,
+          "y": 45
+        },
+        {
+          "x": 98,
+          "y": 46
+        },
+        {
+          "x": 98,
+          "y": 47
+        },
+        {
+          "x": 98,
+          "y": 48
+        }
+      ],
+      "pathLength": 41
+    },
+    {
+      "orderId": "order-2",
+      "assignedCourierId": "courier-2",
+      "courierTransportType": "bicycle",
+      "courierMaxWeight": 15,
+      "courierCompletedToday": 2,
+      "orderWeight": 4,
+      "distance": 17,
+      "distanceType": "pathfinding",
+      "queued": false,
+      "path": [
+        {
+          "x": 62,
+          "y": 82
+        },
+        {
+          "x": 62,
+          "y": 81
+        },
+        {
+          "x": 62,
+          "y": 80
+        },
+        {
+          "x": 62,
+          "y": 79
+        },
+        {
+          "x": 62,
+          "y": 78
+        },
+        {
+          "x": 61,
+          "y": 78
+        },
+        {
+          "x": 60,
+          "y": 78
+        },
+        {
+          "x": 59,
+          "y": 78
+        },
+        {
+          "x": 58,
+          "y": 78
+        },
+        {
+          "x": 58,
+          "y": 77
+        },
+        {
+          "x": 57,
+          "y": 77
+        },
+        {
+          "x": 56,
+          "y": 77
+        },
+        {
+          "x": 55,
+          "y": 77
+        },
+        {
+          "x": 54,
+          "y": 77
+        },
+        {
+          "x": 53,
+          "y": 77
+        },
+        {
+          "x": 52,
+          "y": 77
+        },
+        {
+          "x": 51,
+          "y": 77
+        },
+        {
+          "x": 51,
+          "y": 78
+        }
+      ],
+      "pathLength": 18
+    },
+    {
+      "orderId": "order-3",
+      "assignedCourierId": "courier-5",
+      "courierTransportType": "car",
+      "courierMaxWeight": 50,
+      "courierCompletedToday": 1,
+      "orderWeight": 10,
+      "distance": 73,
+      "distanceType": "pathfinding",
+      "queued": false,
+      "path": [
+        {
+          "x": 89,
+          "y": 28
+        },
+        {
+          "x": 89,
+          "y": 27
+        },
+        {
+          "x": 89,
+          "y": 26
+        },
+        {
+          "x": 89,
+          "y": 25
+        },
+        {
+          "x": 89,
+          "y": 24
+        },
+        {
+          "x": 89,
+          "y": 23
+        },
+        {
+          "x": 89,
+          "y": 22
+        },
+        {
+          "x": 89,
+          "y": 21
+        },
+        {
+          "x": 89,
+          "y": 20
+        },
+        {
+          "x": 89,
+          "y": 19
+        },
+        {
+          "x": 88,
+          "y": 19
+        },
+        {
+          "x": 87,
+          "y": 19
+        },
+        {
+          "x": 86,
+          "y": 19
+        },
+        {
+          "x": 85,
+          "y": 19
+        },
+        {
+          "x": 84,
+          "y": 19
+        },
+        {
+          "x": 83,
+          "y": 19
+        },
+        {
+          "x": 82,
+          "y": 19
+        },
+        {
+          "x": 81,
+          "y": 19
+        },
+        {
+          "x": 80,
+          "y": 19
+        },
+        {
+          "x": 79,
+          "y": 19
+        },
+        {
+          "x": 79,
+          "y": 18
+        },
+        {
+          "x": 78,
+          "y": 18
+        },
+        {
+          "x": 77,
+          "y": 18
+        },
+        {
+          "x": 76,
+          "y": 18
+        },
+        {
+          "x": 75,
+          "y": 18
+        },
+        {
+          "x": 74,
+          "y": 18
+        },
+        {
+          "x": 73,
+          "y": 18
+        },
+        {
+          "x": 72,
+          "y": 18
+        },
+        {
+          "x": 71,
+          "y": 18
+        },
+        {
+          "x": 70,
+          "y": 18
+        },
+        {
+          "x": 69,
+          "y": 18
+        },
+        {
+          "x": 68,
+          "y": 18
+        },
+        {
+          "x": 67,
+          "y": 18
+        },
+        {
+          "x": 66,
+          "y": 18
+        },
+        {
+          "x": 65,
+          "y": 18
+        },
+        {
+          "x": 64,
+          "y": 18
+        },
+        {
+          "x": 63,
+          "y": 18
+        },
+        {
+          "x": 62,
+          "y": 18
+        },
+        {
+          "x": 61,
+          "y": 18
+        },
+        {
+          "x": 60,
+          "y": 18
+        },
+        {
+          "x": 59,
+          "y": 18
+        },
+        {
+          "x": 59,
+          "y": 17
+        },
+        {
+          "x": 58,
+          "y": 17
+        },
+        {
+          "x": 57,
+          "y": 17
+        },
+        {
+          "x": 56,
+          "y": 17
+        },
+        {
+          "x": 55,
+          "y": 17
+        },
+        {
+          "x": 54,
+          "y": 17
+        },
+        {
+          "x": 53,
+          "y": 17
+        },
+        {
+          "x": 53,
+          "y": 16
+        },
+        {
+          "x": 52,
+          "y": 16
+        },
+        {
+          "x": 51,
+          "y": 16
+        },
+        {
+          "x": 50,
+          "y": 16
+        },
+        {
+          "x": 50,
+          "y": 15
+        },
+        {
+          "x": 49,
+          "y": 15
+        },
+        {
+          "x": 48,
+          "y": 15
+        },
+        {
+          "x": 47,
+          "y": 15
+        },
+        {
+          "x": 46,
+          "y": 15
+        },
+        {
+          "x": 45,
+          "y": 15
+        },
+        {
+          "x": 45,
+          "y": 14
+        },
+        {
+          "x": 44,
+          "y": 14
+        },
+        {
+          "x": 43,
+          "y": 14
+        },
+        {
+          "x": 42,
+          "y": 14
+        },
+        {
+          "x": 41,
+          "y": 14
+        },
+        {
+          "x": 40,
+          "y": 14
+        },
+        {
+          "x": 39,
+          "y": 14
+        },
+        {
+          "x": 38,
+          "y": 14
+        },
+        {
+          "x": 37,
+          "y": 14
+        },
+        {
+          "x": 36,
+          "y": 14
+        },
+        {
+          "x": 35,
+          "y": 14
+        },
+        {
+          "x": 34,
+          "y": 14
+        },
+        {
+          "x": 33,
+          "y": 14
+        },
+        {
+          "x": 32,
+          "y": 14
+        },
+        {
+          "x": 31,
+          "y": 14
+        },
+        {
+          "x": 30,
+          "y": 14
+        }
+      ],
+      "pathLength": 74
+    },
+    {
+      "orderId": "order-4",
+      "assignedCourierId": "courier-3",
+      "courierTransportType": "bicycle",
+      "courierMaxWeight": 15,
+      "courierCompletedToday": 8,
+      "orderWeight": 12,
+      "distance": 52,
+      "distanceType": "pathfinding",
+      "queued": false,
+      "path": [
+        {
+          "x": 69,
+          "y": 62
+        },
+        {
+          "x": 68,
+          "y": 62
+        },
+        {
+          "x": 67,
+          "y": 62
+        },
+        {
+          "x": 66,
+          "y": 62
+        },
+        {
+          "x": 65,
+          "y": 62
+        },
+        {
+          "x": 64,
+          "y": 62
+        },
+        {
+          "x": 63,
+          "y": 62
+        },
+        {
+          "x": 62,
+          "y": 62
+        },
+        {
+          "x": 62,
+          "y": 63
+        },
+        {
+          "x": 61,
+          "y": 63
+        },
+        {
+          "x": 60,
+          "y": 63
+        },
+        {
+          "x": 60,
+          "y": 64
+        },
+        {
+          "x": 59,
+          "y": 64
+        },
+        {
+          "x": 59,
+          "y": 65
+        },
+        {
+          "x": 59,
+          "y": 66
+        },
+        {
+          "x": 58,
+          "y": 66
+        },
+        {
+          "x": 58,
+          "y": 67
+        },
+        {
+          "x": 57,
+          "y": 67
+        },
+        {
+          "x": 56,
+          "y": 67
+        },
+        {
+          "x": 55,
+          "y": 67
+        },
+        {
+          "x": 54,
+          "y": 67
+        },
+        {
+          "x": 53,
+          "y": 67
+        },
+        {
+          "x": 52,
+          "y": 67
+        },
+        {
+          "x": 51,
+          "y": 67
+        },
+        {
+          "x": 51,
+          "y": 68
+        },
+        {
+          "x": 51,
+          "y": 69
+        },
+        {
+          "x": 51,
+          "y": 70
+        },
+        {
+          "x": 51,
+          "y": 71
+        },
+        {
+          "x": 50,
+          "y": 71
+        },
+        {
+          "x": 50,
+          "y": 72
+        },
+        {
+          "x": 50,
+          "y": 73
+        },
+        {
+          "x": 50,
+          "y": 74
+        },
+        {
+          "x": 50,
+          "y": 75
+        },
+        {
+          "x": 50,
+          "y": 76
+        },
+        {
+          "x": 50,
+          "y": 77
+        },
+        {
+          "x": 50,
+          "y": 78
+        },
+        {
+          "x": 50,
+          "y": 79
+        },
+        {
+          "x": 50,
+          "y": 80
+        },
+        {
+          "x": 50,
+          "y": 81
+        },
+        {
+          "x": 50,
+          "y": 82
+        },
+        {
+          "x": 50,
+          "y": 83
+        },
+        {
+          "x": 50,
+          "y": 84
+        },
+        {
+          "x": 50,
+          "y": 85
+        },
+        {
+          "x": 50,
+          "y": 86
+        },
+        {
+          "x": 50,
+          "y": 87
+        },
+        {
+          "x": 50,
+          "y": 88
+        },
+        {
+          "x": 50,
+          "y": 89
+        },
+        {
+          "x": 50,
+          "y": 90
+        },
+        {
+          "x": 50,
+          "y": 91
+        },
+        {
+          "x": 50,
+          "y": 92
+        },
+        {
+          "x": 49,
+          "y": 92
+        },
+        {
+          "x": 49,
+          "y": 93
+        },
+        {
+          "x": 49,
+          "y": 94
+        }
+      ],
+      "pathLength": 53
+    },
+    {
+      "message": "No couriers available, order queued",
+      "reason": "weight_too_heavy",
+      "orderWeight": 25,
+      "queueSize": 1,
+      "queued": true,
+      "availableCouriers": [
+        {
+          "id": "courier-1",
+          "transportType": "walker",
+          "maxWeight": 5
+        }
+      ]
+    },
+    {
+      "message": "No couriers available, order queued",
+      "reason": "weight_too_heavy",
+      "orderWeight": 8,
+      "queueSize": 2,
+      "queued": true,
+      "availableCouriers": [
+        {
+          "id": "courier-1",
+          "transportType": "walker",
+          "maxWeight": 5
+        }
+      ]
+    },
+    {
+      "orderId": "order-7",
+      "assignedCourierId": "courier-1",
+      "courierTransportType": "walker",
+      "courierMaxWeight": 5,
+      "courierCompletedToday": 5,
+      "orderWeight": 5,
+      "distance": 56,
+      "distanceType": "pathfinding",
+      "queued": false,
+      "path": [
+        {
+          "x": 12,
+          "y": 81
+        },
+        {
+          "x": 12,
+          "y": 80
+        },
+        {
+          "x": 12,
+          "y": 79
+        },
+        {
+          "x": 12,
+          "y": 78
+        },
+        {
+          "x": 12,
+          "y": 77
+        },
+        {
+          "x": 12,
+          "y": 76
+        },
+        {
+          "x": 12,
+          "y": 75
+        },
+        {
+          "x": 12,
+          "y": 74
+        },
+        {
+          "x": 12,
+          "y": 73
+        },
+        {
+          "x": 12,
+          "y": 72
+        },
+        {
+          "x": 12,
+          "y": 71
+        },
+        {
+          "x": 12,
+          "y": 70
+        },
+        {
+          "x": 12,
+          "y": 69
+        },
+        {
+          "x": 12,
+          "y": 68
+        },
+        {
+          "x": 12,
+          "y": 67
+        },
+        {
+          "x": 12,
+          "y": 66
+        },
+        {
+          "x": 13,
+          "y": 66
+        },
+        {
+          "x": 13,
+          "y": 65
+        },
+        {
+          "x": 13,
+          "y": 64
+        },
+        {
+          "x": 13,
+          "y": 63
+        },
+        {
+          "x": 13,
+          "y": 62
+        },
+        {
+          "x": 13,
+          "y": 61
+        },
+        {
+          "x": 13,
+          "y": 60
+        },
+        {
+          "x": 13,
+          "y": 59
+        },
+        {
+          "x": 13,
+          "y": 58
+        },
+        {
+          "x": 13,
+          "y": 57
+        },
+        {
+          "x": 13,
+          "y": 56
+        },
+        {
+          "x": 13,
+          "y": 55
+        },
+        {
+          "x": 13,
+          "y": 54
+        },
+        {
+          "x": 13,
+          "y": 53
+        },
+        {
+          "x": 13,
+          "y": 52
+        },
+        {
+          "x": 13,
+          "y": 51
+        },
+        {
+          "x": 13,
+          "y": 50
+        },
+        {
+          "x": 14,
+          "y": 50
+        },
+        {
+          "x": 14,
+          "y": 49
+        },
+        {
+          "x": 14,
+          "y": 48
+        },
+        {
+          "x": 13,
+          "y": 48
+        },
+        {
+          "x": 13,
+          "y": 47
+        },
+        {
+          "x": 13,
+          "y": 46
+        },
+        {
+          "x": 13,
+          "y": 45
+        },
+        {
+          "x": 13,
+          "y": 44
+        },
+        {
+          "x": 13,
+          "y": 43
+        },
+        {
+          "x": 13,
+          "y": 42
+        },
+        {
+          "x": 13,
+          "y": 41
+        },
+        {
+          "x": 13,
+          "y": 40
+        },
+        {
+          "x": 13,
+          "y": 39
+        },
+        {
+          "x": 13,
+          "y": 38
+        },
+        {
+          "x": 14,
+          "y": 38
+        },
+        {
+          "x": 15,
+          "y": 38
+        },
+        {
+          "x": 15,
+          "y": 37
+        },
+        {
+          "x": 15,
+          "y": 36
+        },
+        {
+          "x": 15,
+          "y": 35
+        },
+        {
+          "x": 15,
+          "y": 34
+        },
+        {
+          "x": 15,
+          "y": 33
+        },
+        {
+          "x": 15,
+          "y": 32
+        },
+        {
+          "x": 15,
+          "y": 31
+        },
+        {
+          "x": 15,
+          "y": 30
+        }
+      ],
+      "pathLength": 57
+    },
+    {
+      "message": "No couriers available, order queued",
+      "reason": "all_busy",
+      "queueSize": 3,
+      "queued": true
+    }
+  ],
+  "queue": {
+    "size": 2,
+    "orders": [
+      {
+        "orderId": "order-5",
+        "weight": 25,
+        "enqueuedAt": 1771350620931,
+        "waitingTime": 873
+      },
+      {
+        "orderId": "order-8",
+        "weight": 35,
+        "enqueuedAt": 1771350621802,
+        "waitingTime": 2
+      }
+    ]
+  },
+  "summary": {
+    "totalCouriers": 5,
+    "totalOrders": 8,
+    "successfulAssignments": 5,
+    "queuedAssignments": 3,
+    "failedAssignments": 0,
+    "queueSize": 2,
+    "completedOrdersToday": {
+      "total": 22,
+      "average": 4.4,
+      "min": 1,
+      "max": 9
+    },
+    "byTransport": {
+      "walker": {
+        "total": 1,
+        "free": 1,
+        "busy": 0
+      },
+      "bicycle": {
+        "total": 2,
+        "free": 1,
+        "busy": 1
+      },
+      "scooter": {
+        "total": 1,
+        "free": 0,
+        "busy": 1
+      },
+      "car": {
+        "total": 1,
+        "free": 0,
+        "busy": 1
+      }
+    }
+  }
+}

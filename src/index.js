@@ -4,14 +4,12 @@ const { Courier, CourierStatus } = require('./domain/Courier');
 const { TransportType, getSuitableTransportTypes } = require('./domain/TransportType');
 const AssignmentService = require('./services/AssignmentService');
 const MapGenerator = require('./services/MapGenerator');
-const DistanceCalculator = require('./utils/DistanceCalculator');
-const PathFinder = require('./utils/PathFinder');
 const fs = require('fs');
 const path = require('path');
 
-console.log('╔════════════════════════════════════════════════════════════╗');
-console.log('║  🚀 Stage 2 MVP: Система з вагою та типами транспорту    ║');
-console.log('╚════════════════════════════════════════════════════════════╝');
+console.log('╔══════════════════════════════════════════════════════════════╗');
+console.log('║  🚀 Stage 3: Система з пріоритетами та чергою замовлень    ║');
+console.log('╚══════════════════════════════════════════════════════════════╝');
 console.log('');
 
 // ============================================
@@ -38,7 +36,7 @@ try {
   const endTime = Date.now();
 
   console.log(`✅ Карта згенерована за ${endTime - startTime}ms`);
-  console.log(`   Прохідних клітин: ${cityMap.countWalkable()}/10000 (${(cityMap.countWalkable() / 100).toFixed(1)}%)`);
+  console.log(`   Прохідних клітин: ${cityMap.countWalkable()}/10000`);
 
   try {
     const dir = path.dirname(mapFilePath);
@@ -54,84 +52,45 @@ try {
 
 console.log('');
 
-// Вивести частину карти
-console.log('🗺️  Лівий верхній кут міста (20×15):');
-cityMap.print(0, 0, 20, 15);
-console.log('   · = дорога (прохідна клітина)');
-console.log('   █ = будівля (непрохідна клітина)');
-console.log('');
-
 // ============================================
-// КРОК 2: Тест алго��итму Дейкстри
+// КРОК 2: Допоміжні функції
 // ============================================
 
-console.log('--- 🧪 Тест алгоритму Дейкстри vs Відстані ---\n');
-
-const walkableCells = cityMap.getWalkableCells();
-const testStart = new Location(walkableCells[0].x, walkableCells[0].y);
-const testEnd = new Location(
-    walkableCells[Math.floor(walkableCells.length / 3)].x,
-    walkableCells[Math.floor(walkableCells.length / 3)].y
-);
-
-console.log(`Тестова точка A: (${testStart.x}, ${testStart.y})`);
-console.log(`Тестова точка B: (${testEnd.x}, ${testEnd.y})`);
-console.log('');
-
-// Евклідова відстань
-const euclidean = DistanceCalculator.euclidean(testStart, testEnd);
-console.log(`📏 Euclidean (пряма лінія): ${euclidean.toFixed(2)} одиниць`);
-
-// Manhattan відстань
-const manhattan = DistanceCalculator.manhattan(testStart, testEnd);
-console.log(`📐 Manhattan (сітка без перешкод): ${manhattan.toFixed(2)} кроків`);
-
-// Алгоритм Дейкстри (реальний шлях)
-const dijkstraStart = Date.now();
-const pathResult = PathFinder.findPath(cityMap, testStart, testEnd);
-const dijkstraEnd = Date.now();
-
-if (pathResult) {
-  console.log(`🛣️  Dijkstra (реальний шлях по дорогах): ${pathResult.distance} кроків`);
-  console.log(`   Час обчислення: ${dijkstraEnd - dijkstraStart}ms`);
-  console.log(`   Співвідношення реального шляху до прямої: ${(pathResult.distance / euclidean).toFixed(2)}x`);
-} else {
-  console.log(`❌ Dijkstra: шлях не знайдено`);
-}
-
-console.log('');
-
-// ============================================
-// КРОК 3: Допоміжні функції
-// ============================================
-
-/**
- * Отримати випадкову прохідну локацію на карті
- */
 function getRandomWalkableLocation(map) {
   const walkableCells = map.getWalkableCells();
-  if (walkableCells.length === 0) {
-    throw new Error('No walkable cells available on the map');
-  }
   const randomCell = walkableCells[Math.floor(Math.random() * walkableCells.length)];
   return new Location(randomCell.x, randomCell.y);
 }
 
+function printSeparator(title) {
+  console.log('═══════════════════════════════════════════════════════════════');
+  if (title) {
+    console.log(`  ${title}`);
+    console.log('═══════════════════════════════════════════════════════════════');
+  }
+  console.log('');
+}
+
 // ============================================
-// КРОК 4: Створення кур'єрів з різними типами транспорту
+// КРОК 3: Створення кур'єрів
 // ============================================
 
-console.log('👥 Створення кур\'єрів з різними типами транспор��у:\n');
+console.log('👥 Створення кур\'єрів з різними типами транспорту:\n');
 
 const couriers = [
   new Courier('courier-1', getRandomWalkableLocation(cityMap), 'walker', CourierStatus.FREE),
-  new Courier('courier-2', getRandomWalkableLocation(cityMap), 'walker', CourierStatus.FREE),
+  new Courier('courier-2', getRandomWalkableLocation(cityMap), 'bicycle', CourierStatus.FREE),
   new Courier('courier-3', getRandomWalkableLocation(cityMap), 'bicycle', CourierStatus.FREE),
-  new Courier('courier-4', getRandomWalkableLocation(cityMap), 'bicycle', CourierStatus.FREE),
-  new Courier('courier-5', getRandomWalkableLocation(cityMap), 'scooter', CourierStatus.FREE),
-  new Courier('courier-6', getRandomWalkableLocation(cityMap), 'car', CourierStatus.FREE),
-  new Courier('courier-7', getRandomWalkableLocation(cityMap), 'car', CourierStatus.BUSY), // Зайнятий
+  new Courier('courier-4', getRandomWalkableLocation(cityMap), 'scooter', CourierStatus.FREE),
+  new Courier('courier-5', getRandomWalkableLocation(cityMap), 'car', CourierStatus.FREE),
 ];
+
+// Симулювати різну кількість виконаних замовлень (для тесту пріоритетів)
+couriers[0]._completedOrdersToday = 5;  // Walker вже виконав 5
+couriers[1]._completedOrdersToday = 2;  // Bicycle виконав 2
+couriers[2]._completedOrdersToday = 8;  // Bicycle виконав 8
+couriers[3]._completedOrdersToday = 3;  // Scooter виконав 3
+couriers[4]._completedOrdersToday = 1;  // Car виконав 1
 
 couriers.forEach(c => {
   console.log(`  ${c.toString()}`);
@@ -140,332 +99,321 @@ couriers.forEach(c => {
 console.log('');
 
 // ============================================
-// КРОК 5: Ініціалізація сервісу призначення
+// КРОК 4: Ініціалізація сервісу
 // ============================================
 
 const assignmentService = new AssignmentService(couriers, cityMap, true);
+assignmentService.setDistanceThreshold(1.0); // Поріг для пріоритету
 
 const stats = assignmentService.getStats();
-console.log('📊 Початкова статистика кур\'єрів:');
-console.log(`   Всього: ${stats.total} | Вільних: ${stats.free} | Зайнятих: ${stats.busy}`);
-console.log('   Розподіл по типах транспорту:');
+console.log('📊 Початкова статистика:');
+console.log(`   Всього кур'єрів: ${stats.total} | Вільних: ${stats.free} | Зайнятих: ${stats.busy}`);
+console.log(`   Розподіл по транспорту:`);
 Object.entries(stats.byTransport).forEach(([type, data]) => {
   const emoji = Object.values(TransportType).find(t => t.name === type)?.displayName || type;
-  const percentage = ((data.free / data.total) * 100).toFixed(0);
-  console.log(`     ${emoji}: ${data.total} шт. (вільних: ${data.free}, зайнятих: ${data.busy}) [${percentage}% доступні]`);
+  console.log(`     ${emoji}: ${data.total} (вільних: ${data.free})`);
 });
+console.log(`   Виконано замовлень сьогодні:`);
+console.log(`     Всього: ${stats.completedOrdersToday.total}`);
+console.log(`     Середнє на кур'єра: ${stats.completedOrdersToday.average}`);
+console.log(`     Мін/Макс: ${stats.completedOrdersToday.min} / ${stats.completedOrdersToday.max}`);
+console.log(`   Черга замовлень: ${stats.queueSize}`);
 
 console.log('');
 
 // ============================================
-// КРОК 6: Створення замовлень з різною вагою
+// КРОК 5: Створення замовлень
 // ============================================
 
-console.log('🍕 Створення замовлень з різною вагою:\n');
+printSeparator('🍕 СТВОРЕННЯ ЗАМОВЛЕНЬ');
 
 const orders = [
-  new Order('order-1', getRandomWalkableLocation(cityMap), 2),   // Дуже легке
-  new Order('order-2', getRandomWalkableLocation(cityMap), 4),   // Легке (walker OK)
-  new Order('order-3', getRandomWalkableLocation(cityMap), 8),   // Середнє (bicycle+)
-  new Order('order-4', getRandomWalkableLocation(cityMap), 12),  // Важке (bicycle+)
-  new Order('order-5', getRandomWalkableLocation(cityMap), 20),  // Дуже важке (scooter/car)
-  new Order('order-6', getRandomWalkableLocation(cityMap), 35),  // Екстра важке (scooter/car)
-  new Order('order-7', getRandomWalkableLocation(cityMap), 48),  // Майже максимум
-  new Order('order-8', getRandomWalkableLocation(cityMap), 60),  // НАДТО ВАЖКЕ (ніхто не може)
+  new Order('order-1', getRandomWalkableLocation(cityMap), 3),   // Легке
+  new Order('order-2', getRandomWalkableLocation(cityMap), 4),   // Легке
+  new Order('order-3', getRandomWalkableLocation(cityMap), 10),  // Середнє
+  new Order('order-4', getRandomWalkableLocation(cityMap), 12),  // Середнє
+  new Order('order-5', getRandomWalkableLocation(cityMap), 25),  // Важке
+  new Order('order-6', getRandomWalkableLocation(cityMap), 8),   // Середнє
+  new Order('order-7', getRandomWalkableLocation(cityMap), 5),   // Легке
+  new Order('order-8', getRandomWalkableLocation(cityMap), 35),  // Дуже важке
 ];
 
 orders.forEach(o => {
   const suitable = getSuitableTransportTypes(o.weight);
-  const suitableNames = suitable.map(t => t.displayName).join(', ');
   console.log(`  ${o.toString()}`);
-  console.log(`    ✓ Підходить: ${suitableNames || '❌ НІХТО НЕ МОЖЕ ПЕРЕВЕЗТИ'}`);
+  console.log(`    Підходить: ${suitable.map(t => t.displayName).join(', ')}`);
 });
 
 console.log('');
 
 // ============================================
-// КРОК 7: Призначення замовлень з ��етальним логом
+// КРОК 6: СЦЕНАРІЙ 1 - Призначення з пріоритетами
 // ============================================
 
-console.log('═══════════════════════════════════════════════════════════');
-console.log('  🎯 ПРИЗНАЧЕННЯ ЗАМОВЛЕНЬ (з алгоритмом Дейкстри)');
-console.log('═══════════════════════════════════════════════════════════');
-console.log('');
+printSeparator('🎯 СЦЕНАРІЙ 1: Призначення перших 3 замовлень (тест пріоритетів)');
 
 const results = [];
 
-orders.forEach((order, index) => {
-  console.log(`[${index + 1}/${orders.length}] 🔍 Обробка ${order.id} (вага: ${order.weight}kg)...`);
+for (let i = 0; i < 3; i++) {
+  const order = orders[i];
+  console.log(`[${i + 1}] 🔍 Призначення ${order.id} (вага: ${order.weight}kg)...`);
 
-  try {
-    const startTime = Date.now();
-    const result = assignmentService.assign(order);
-    const endTime = Date.now();
+  const startTime = Date.now();
+  const result = assignmentService.assign(order);
+  const endTime = Date.now();
 
-    results.push(result);
+  results.push(result);
 
-    if (result.message) {
-      // Замовлення не призначено
-      console.log(`      ❌ Не вдалося призначити: ${result.message}`);
-
-      if (result.reason === 'weight_too_heavy') {
-        console.log(`      💡 Причина: замовлення ${result.orderWeight}kg надто важке`);
-        console.log(`      📋 Доступні кур'єри та їх обмеження:`);
-        result.availableCouriers?.forEach(c => {
-          const type = Object.values(TransportType).find(t => t.name === c.transportType);
-          console.log(`         • ${c.id}: ${type?.displayName} (макс ${c.maxWeight}kg)`);
-        });
-      } else if (result.reason === 'all_busy') {
-        console.log(`      💡 Причина: всі кур'єри зайняті`);
-      } else if (result.reason === 'no_path_found') {
-        console.log(`      💡 Причина: шлях на карті не знайдено`);
-      }
-    } else {
-      // Замовлення успішно призначено
-      const courier = couriers.find(c => c.id === result.assignedCourierId);
-      console.log(`      ✅ Призначено → ${result.assignedCourierId}`);
-      console.log(`      🚗 Транспорт: ${courier.transportType.displayName} (вантажопідйомність: ${result.courierMaxWeight}kg)`);
-      console.log(`      📦 Вага замовлення: ${result.orderWeight}kg (${((result.orderWeight / result.courierMaxWeight) * 100).toFixed(0)}% від максимуму)`);
-      console.log(`      📏 Відстань: ${result.distance} кроків (метод: ${result.distanceType})`);
-      console.log(`      ⏱️  Час обчислення: ${endTime - startTime}ms`);
-      console.log(`      📍 Маршрут: (${order.restaurantLocation.x}, ${order.restaurantLocation.y}) → (${courier.location.x}, ${courier.location.y})`);
-
-      if (result.path && result.path.length > 0) {
-        const pathPreview = result.path.slice(0, 3).map(p => `(${p.x},${p.y})`).join(' → ');
-        console.log(`      🛣️  Перші кроки: ${pathPreview}...`);
-      }
-    }
-
-    console.log('');
-  } catch (error) {
-    console.error(`      ❌ ПОМИЛКА: ${error.message}`);
-    console.log('');
+  if (result.queued) {
+    console.log(`    ⏳ Додано в чергу: ${result.message}`);
+    console.log(`    📊 Розмір черги: ${result.queueSize}`);
+  } else if (result.message) {
+    console.log(`    ❌ Не призначено: ${result.message}`);
+  } else {
+    const courier = couriers.find(c => c.id === result.assignedCourierId);
+    console.log(`    ✅ Призначено → ${result.assignedCourierId}`);
+    console.log(`       Транспорт: ${courier.transportType.displayName}`);
+    console.log(`       Виконано сьогодні: ${result.courierCompletedToday} замовлень`);
+    console.log(`       Відстань: ${result.distance} кроків`);
+    console.log(`       Час: ${endTime - startTime}ms`);
   }
-});
+  console.log('');
+}
 
 // ============================================
-// КРОК 8: Підсумкова статистика
+// КРОК 7: СЦЕНАРІЙ 2 - Заповнення черги
 // ============================================
 
-console.log('═══════════════════════════════════════════════════════════');
-console.log('  📊 ПІДСУМКОВА СТАТИСТИКА');
-console.log('═══════════════════════════════════════════════════════════');
+printSeparator('⏳ СЦЕНАРІЙ 2: Призначення решти замовлень (заповнюємо чергу)');
+
+for (let i = 3; i < orders.length; i++) {
+  const order = orders[i];
+  console.log(`[${i + 1}] 🔍 Призначення ${order.id} (вага: ${order.weight}kg)...`);
+
+  const result = assignmentService.assign(order);
+  results.push(result);
+
+  if (result.queued) {
+    console.log(`    ⏳ Додано в чергу (причина: ${result.reason})`);
+    console.log(`    📊 Розмір черги: ${result.queueSize}`);
+  } else if (result.message) {
+    console.log(`    ❌ Не призначено: ${result.message}`);
+  } else {
+    const courier = couriers.find(c => c.id === result.assignedCourierId);
+    console.log(`    ✅ Призначено → ${result.assignedCourierId} (${courier.transportType.displayName})`);
+  }
+}
+
 console.log('');
 
+const currentStats = assignmentService.getStats();
+console.log(`📊 Поточний стан:`);
+console.log(`   Вільних кур'єрів: ${currentStats.free}/${currentStats.total}`);
+console.log(`   Замовлень в черзі: ${currentStats.queueSize}`);
+
+console.log('');
+
+// ============================================
+// КРОК 8: СЦЕНАРІЙ 3 - Завершення замовлень
+// ============================================
+
+printSeparator('🏁 СЦЕНАРІЙ 3: Завершення замовлень та автопризначення з черги');
+
+// Взяти перших 3 зайнятих кур'єрів
+const busyCouriers = couriers.filter(c => !c.isFree()).slice(0, 3);
+
+busyCouriers.forEach((courier, index) => {
+  console.log(`[${index + 1}] 🚚 Кур'єр ${courier.id} завершує замовлення ${courier.currentOrderId}...`);
+
+  const completeResult = assignmentService.completeOrder(courier.id);
+
+  console.log(`    ✅ Замовлення ${completeResult.completedOrderId} завершено`);
+  console.log(`    📈 Виконано сьогодні: ${completeResult.completedOrdersToday} замовлень`);
+
+  if (completeResult.queuedOrderAssigned) {
+    console.log(`    🎯 Автоматично призначено з черги:`);
+    console.log(`       Замовлення: ${completeResult.queuedOrderAssigned.orderId}`);
+    console.log(`       Відстань: ${completeResult.queuedOrderAssigned.distance} кроків`);
+  } else {
+    console.log(`    ℹ️  Черга порожня або замовлення не підходять`);
+  }
+
+  console.log('');
+});
+
+const afterCompletionStats = assignmentService.getStats();
+console.log(`📊 Після завершень:`);
+console.log(`   Вільних кур'єрів: ${afterCompletionStats.free}/${afterCompletionStats.total}`);
+console.log(`   Замовлень в черзі: ${afterCompletionStats.queueSize}`);
+
+console.log('');
+
+// ============================================
+// КРОК 9: СЦЕНАРІЙ 4 - Масова обробка черги
+// ============================================
+
+if (afterCompletionStats.queueSize > 0) {
+  printSeparator('🔄 СЦЕНАРІЙ 4: Масова обробка черги');
+
+  console.log(`Спроба обробити всі замовлення з черги...`);
+  console.log(`Замовлень в черзі: ${afterCompletionStats.queueSize}`);
+  console.log('');
+
+  const queueResult = assignmentService.processQueue();
+
+  console.log(`✅ Оброблено замовлень: ${queueResult.processed}`);
+  console.log(`   Успішно призначено: ${queueResult.successful}`);
+  console.log(`   Не вдалося призначити: ${queueResult.failed}`);
+  console.log(`   Залишилось в черзі: ${queueResult.remainingQueue}`);
+
+  console.log('');
+}
+
+// ============================================
+// КРОК 10: Детальна статистика черги
+// ============================================
+
+const queue = assignmentService.getQueue();
+if (!queue.isEmpty()) {
+  printSeparator('📋 ДЕТАЛЬНА ІНФОРМАЦІЯ ПРО ЧЕРГУ');
+
+  const queueStats = queue.getStats();
+  console.log(`Розмір черги: ${queueStats.size}`);
+  console.log(`Середній час очікування: ${(queueStats.avgWaitingTime / 1000).toFixed(2)}s`);
+  console.log(`Максимальний час очікування: ${(queueStats.maxWaitingTime / 1000).toFixed(2)}s`);
+  console.log('');
+
+  console.log(`Замовлення в черзі:`);
+  const allQueued = queue.getAll();
+  allQueued.forEach((item, index) => {
+    console.log(`  [${index + 1}] ${item.order.id} (${item.order.weight}kg) - очікує ${(item.waitingTime / 1000).toFixed(1)}s`);
+  });
+
+  console.log('');
+}
+
+// ============================================
+// КРОК 11: Підсумкова статистика
+// ============================================
+
+printSeparator('📊 ПІДСУМКОВА СТАТИСТИКА');
+
 const finalStats = assignmentService.getStats();
-console.log('🚚 Статистика кур\'єрів після призначень:');
-console.log(`   Всього: ${finalStats.total} | Вільних: ${finalStats.free} | Зайнятих: ${finalStats.busy}`);
-console.log('   Розподіл по типах транспорту:');
+
+console.log('🚚 Кур\'єри:');
+console.log(`   Всього: ${finalStats.total}`);
+console.log(`   Вільних: ${finalStats.free}`);
+console.log(`   Зайнятих: ${finalStats.busy}`);
+console.log('');
+
+console.log('📦 Виконані замовлення сьогодні:');
+console.log(`   Загальна кількість: ${finalStats.completedOrdersToday.total}`);
+console.log(`   Середнє на кур'єра: ${finalStats.completedOrdersToday.average}`);
+console.log(`   Найменше: ${finalStats.completedOrdersToday.min}`);
+console.log(`   Найбільше: ${finalStats.completedOrdersToday.max}`);
+console.log('');
+
+console.log('🔝 Топ кур\'єрів за кількістю виконаних замовлень:');
+const sortedCouriers = [...couriers].sort((a, b) => b.completedOrdersToday - a.completedOrdersToday);
+sortedCouriers.slice(0, 5).forEach((c, index) => {
+  const status = c.isFree() ? '🟢' : '🔴';
+  console.log(`   ${index + 1}. ${status} ${c.id} (${c.transportType.displayName}): ${c.completedOrdersToday} замовлень`);
+});
+console.log('');
+
+console.log('📈 Розподіл по типах транспорту:');
 Object.entries(finalStats.byTransport).forEach(([type, data]) => {
   const emoji = Object.values(TransportType).find(t => t.name === type)?.displayName || type;
   const workload = data.total > 0 ? ((data.busy / data.total) * 100).toFixed(0) : 0;
-  console.log(`     ${emoji}: вільн��х ${data.free}/${data.total} (завантаження: ${workload}%)`);
+  console.log(`   ${emoji}:`);
+  console.log(`     Всього: ${data.total}, Вільних: ${data.free}, Зайнятих: ${data.busy}`);
+  console.log(`     Завантаження: ${workload}%`);
 });
-
 console.log('');
 
-const successfulAssignments = results.filter(r => !r.message).length;
-const failedAssignments = results.filter(r => r.message).length;
+console.log('⏳ Черга замовлень:');
+console.log(`   Поточний розмір: ${finalStats.queueSize}`);
+if (finalStats.queueSize > 0) {
+  const queueStats = queue.getStats();
+  console.log(`   Середній час очікування: ${(queueStats.avgWaitingTime / 1000).toFixed(2)}s`);
+}
+console.log('');
 
-console.log('📦 Статистика замовлень:');
+const successfulAssignments = results.filter(r => !r.message && !r.queued).length;
+const queuedAssignments = results.filter(r => r.queued).length;
+const failedAssignments = results.filter(r => r.message && !r.queued).length;
+
+console.log('📊 Статистика призначень:');
 console.log(`   Всього замовлень: ${orders.length}`);
 console.log(`   ✅ Успішно призначено: ${successfulAssignments} (${((successfulAssignments / orders.length) * 100).toFixed(0)}%)`);
-console.log(`   ❌ Не вдалося призначити: ${failedAssignments} (${((failedAssignments / orders.length) * 100).toFixed(0)}%)`);
-
-if (successfulAssignments > 0) {
-  const distances = results.filter(r => !r.message).map(r => r.distance);
-  const avgDistance = (distances.reduce((a, b) => a + b, 0) / distances.length).toFixed(2);
-  const minDistance = Math.min(...distances);
-  const maxDistance = Math.max(...distances);
-
-  console.log('');
-  console.log('📏 Статистика відстаней:');
-  console.log(`   Середня відстань: ${avgDistance} кроків`);
-  console.log(`   Мінімальна відстань: ${minDistance} кроків`);
-  console.log(`   Максимальна відстань: ${maxDistance} кроків`);
-  console.log(`   Діапазон: ${(maxDistance - minDistance)} кроків`);
-
-  // Статистика по вазі
-  const weights = results.filter(r => !r.message).map(r => r.orderWeight);
-  const avgWeight = (weights.reduce((a, b) => a + b, 0) / weights.length).toFixed(2);
-
-  console.log('');
-  console.log('⚖️  Статистика ваги:');
-  console.log(`   Середня вага: ${avgWeight}kg`);
-  console.log(`   Мінімальна вага: ${Math.min(...weights)}kg`);
-  console.log(`   Максимальна вага: ${Math.max(...weights)}kg`);
-}
-
-// Статистика причин відмов
-const failureReasons = results
-.filter(r => r.message)
-.reduce((acc, r) => {
-  acc[r.reason] = (acc[r.reason] || 0) + 1;
-  return acc;
-}, {});
-
-if (Object.keys(failureReasons).length > 0) {
-  console.log('');
-  console.log('🔍 Причини відмов:');
-  Object.entries(failureReasons).forEach(([reason, count]) => {
-    const reasonText = {
-      'all_busy': 'всі кур\'єри зайняті',
-      'weight_too_heavy': 'вага замовлення надто велика',
-      'no_path_found': 'шлях на карті не знайдено'
-    }[reason] || reason;
-    const percentage = ((count / failedAssignments) * 100).toFixed(0);
-    console.log(`   • ${reasonText}: ${count} (${percentage}%)`);
-  });
-}
+console.log(`   ⏳ Додано в чергу: ${queuedAssignments} (${((queuedAssignments / orders.length) * 100).toFixed(0)}%)`);
+console.log(`   ❌ Відмовлено: ${failedAssignments} (${((failedAssignments / orders.length) * 100).toFixed(0)}%)`);
 
 console.log('');
 
 // ============================================
-// КРОК 9: Порівняння методів обчислення відстані
+// КРОК 12: Демонстрація пріоритетів
 // ============================================
 
-if (successfulAssignments > 0) {
-  console.log('═══════════════════════════════════════════════════════════');
-  console.log('  🔬 ПОРІВНЯННЯ МЕТОДІВ ОБЧИСЛЕННЯ ВІДСТАНІ');
-  console.log('═══════════════════════════════════════════════════════════');
-  console.log('');
+printSeparator('🎯 АНАЛІЗ ПРІОРИТЕТІВ');
 
-  // Взяти перше успішне замовлення
-  const successResult = results.find(r => !r.message);
-  const successOrder = orders.find(o => o.id === successResult.orderId);
-  const successCourier = couriers.find(c => c.id === successResult.assignedCourierId);
+console.log('Логіка пріоритетів Stage 3:');
+console.log('  1️⃣  Фільтруємо кур\'єрів за можливістю перевезти вагу');
+console.log('  2️⃣  Обчислюємо відстань до кожного підходящого кур\'єра');
+console.log('  3️⃣  Сортуємо за відстанню (найближчий спочатку)');
+console.log('  4️⃣  Якщо різниця відстаней < 1.0 одиниць:');
+console.log('      → вибираємо кур\'єра з МЕНШОЮ кількістю виконаних замовлень');
+console.log('  5️⃣  Інакше вибираємо найближчого');
+console.log('');
 
-  console.log(`Приклад: ${successResult.orderId} → ${successResult.assignedCourierId}`);
-  console.log(`Від: (${successOrder.restaurantLocation.x}, ${successOrder.restaurantLocation.y})`);
-  console.log(`До: (${successCourier.location.x}, ${successCourier.location.y})`);
-  console.log('');
+console.log('Приклад:');
+console.log('  Замовлення на відстані 10 кроків:');
+console.log('    • Кур\'єр A: відстань 10, виконав 5 замовлень');
+console.log('    • Кур\'єр B: відстань 10.5, виконав 2 замовлення');
+console.log('  Різниця відстаней: 0.5 < 1.0 → вибираємо Кур\'єра B (менше навантаження)');
+console.log('');
 
-  const compEuclidean = DistanceCalculator.euclidean(successOrder.restaurantLocation, successCourier.location);
-  const compManhattan = DistanceCalculator.manhattan(successOrder.restaurantLocation, successCourier.location);
-  const compDijkstra = successResult.distance;
-
-  console.log(`📏 Euclidean (пряма лінія): ${compEuclidean.toFixed(2)} одиниць`);
-  console.log(`📐 Manhattan (без перешкод): ${compManhattan.toFixed(2)} кроків`);
-  console.log(`🛣️  Dijkstra (реальний шлях): ${compDijkstra} кроків`);
-  console.log('');
-  console.log(`📊 Висновок:`);
-  console.log(`   Реальний шлях у ${(compDijkstra / compEuclidean).toFixed(2)}x довший за пряму лінію`);
-  console.log(`   Реальний шлях у ${(compDijkstra / compManhattan).toFixed(2)}x довший за Manhattan`);
-  console.log('');
-}
+console.log('  Замовлення на відстані 10 кроків:');
+console.log('    • Кур\'єр A: відстань 10, виконав 5 замовлень');
+console.log('    • Кур\'єр C: відстань 12, виконав 1 замовлення');
+console.log('  Різниця відстаней: 2.0 > 1.0 → вибираємо Кур\'єра A (найближчий)');
+console.log('');
 
 // ============================================
-// КРОК 10: Візуалізація на карті
-// ============================================
-
-if (successfulAssignments > 0) {
-  console.log('═══════════════════════════════════════════════════════════');
-  console.log('  🗺️  ВІЗУАЛІЗАЦІЯ ШЛЯХУ НА КАРТІ');
-  console.log('═══════════════════════════════════════════════════════════');
-  console.log('');
-
-  const visualResult = results.find(r => r.path && r.path.length > 0);
-
-  if (visualResult) {
-    const visualOrder = orders.find(o => o.id === visualResult.orderId);
-    const visualCourier = couriers.find(c => c.id === visualResult.assignedCourierId);
-
-    console.log(`Замовлення: ${visualResult.orderId} (${visualResult.orderWeight}kg)`);
-    console.log(`Кур'єр: ${visualResult.assignedCourierId} (${visualCourier.transportType.displayName})`);
-    console.log(`Довжина шляху: ${visualResult.distance} кроків`);
-    console.log('');
-
-    // Знайти межі для візуалізації
-    const path = visualResult.path;
-    const allX = path.map(p => p.x);
-    const allY = path.map(p => p.y);
-    const minX = Math.max(0, Math.min(...allX) - 2);
-    const maxX = Math.min(99, Math.max(...allX) + 2);
-    const minY = Math.max(0, Math.min(...allY) - 2);
-    const maxY = Math.min(99, Math.max(...allY) + 2);
-
-    const width = maxX - minX + 1;
-    const height = maxY - minY + 1;
-
-    // Обмежи��и розмір візуалізації
-    if (width <= 40 && height <= 20) {
-      const visual = [];
-      for (let y = 0; y < height; y++) {
-        visual[y] = [];
-        for (let x = 0; x < width; x++) {
-          const mapX = minX + x;
-          const mapY = minY + y;
-
-          if (cityMap.isWalkable(mapX, mapY)) {
-            visual[y][x] = '·';
-          } else {
-            visual[y][x] = '█';
-          }
-        }
-      }
-
-      // Позначити шлях
-      path.forEach((point, index) => {
-        const x = point.x - minX;
-        const y = point.y - minY;
-
-        if (index === 0) {
-          visual[y][x] = 'R'; // Ресторан (старт)
-        } else if (index === path.length - 1) {
-          visual[y][x] = 'C'; // Кур'єр (кінець)
-        } else {
-          visual[y][x] = '*'; // Шлях
-        }
-      });
-
-      // Вивести
-      for (let y = 0; y < height; y++) {
-        console.log(visual[y].join(''));
-      }
-
-      console.log('');
-      console.log('Легенда:');
-      console.log('  R = ресторан (початок маршруту)');
-      console.log('  C = кур\'єр (кінець маршруту)');
-      console.log('  * = шлях кур\'єра');
-      console.log('  · = дорога');
-      console.log('  █ = будівля');
-    } else {
-      console.log('⚠️  Шлях надто довгий для візуалізації');
-    }
-
-    console.log('');
-  }
-}
-
-// ============================================
-// КРОК 11: Збереження результатів у JSON
+// КРОК 13: Збереження результатів
 // ============================================
 
 const outputData = {
   timestamp: new Date().toISOString(),
-  version: 'Stage 1 MVP',
-  algorithm: 'Dijkstra with weight constraints',
-  map: {
-    size: cityMap.size,
-    walkableCells: cityMap.countWalkable(),
-    density: ((cityMap.countWalkable() / 10000) * 100).toFixed(2) + '%'
+  version: 'Stage 3 MVP',
+  features: [
+    'Priority by completed orders',
+    'Automatic queue management',
+    'Distance threshold for priority',
+    'Auto-assignment from queue on completion'
+  ],
+  config: {
+    distanceThreshold: 1.0,
+    mapSize: cityMap.size,
+    walkableCells: cityMap.countWalkable()
   },
   couriers: couriers.map(c => c.toJSON()),
   orders: orders.map(o => o.toJSON()),
   assignments: results,
+  queue: queue.toJSON(),
   summary: {
     totalCouriers: couriers.length,
     totalOrders: orders.length,
     successfulAssignments,
+    queuedAssignments,
     failedAssignments,
-    successRate: ((successfulAssignments / orders.length) * 100).toFixed(2) + '%',
-    byTransport: finalStats.byTransport,
-    failureReasons: failureReasons
+    queueSize: finalStats.queueSize,
+    completedOrdersToday: finalStats.completedOrdersToday,
+    byTransport: finalStats.byTransport
   }
 };
 
-const resultsPath = path.join(__dirname, '../data/stage1-results.json');
+const resultsPath = path.join(__dirname, '../data/stage3-results.json');
 
 try {
   const dir = path.dirname(resultsPath);
@@ -474,14 +422,55 @@ try {
   }
 
   fs.writeFileSync(resultsPath, JSON.stringify(outputData, null, 2));
-  console.log('💾 Результати збережено у JSON:');
+  console.log('💾 Результати збережено:');
   console.log(`   Файл: ${resultsPath}`);
   console.log(`   Розмір: ${(fs.statSync(resultsPath).size / 1024).toFixed(2)} KB`);
 } catch (error) {
-  console.error('❌ Помилка збереження результатів:', error.message);
+  console.error('❌ Помилка збереження:', error.message);
 }
 
 console.log('');
-console.log('╔════════════════════════════════════════════════════════════╗');
-console.log('║  ✨ Stage 2 MVP завершено!                                ║');
-console.log('╚══════════════════���═════════════════════════════════════════╝');
+
+// ============================================
+// КРОК 14: Рекомендації
+// ============================================
+
+printSeparator('💡 РЕКОМЕНДАЦІЇ ДЛЯ ОПТИМІЗАЦІЇ');
+
+const avgCompleted = finalStats.completedOrdersToday.average;
+const maxCompleted = finalStats.completedOrdersToday.max;
+const minCompleted = finalStats.completedOrdersToday.min;
+const loadDiff = maxCompleted - minCompleted;
+
+if (loadDiff > 5) {
+  console.log('⚠️  Виявлено нерівномірне навантаження на кур\'єрів!');
+  console.log(`   Різниця між найбільш та найменш завантаженим: ${loadDiff} замовлень`);
+  console.log('   Рекомендації:');
+  console.log('   • Збільшити поріг відстані для пріоритету (зараз 1.0)');
+  console.log('   • Додати більше кур\'єрів у зони з високим попитом');
+  console.log('');
+}
+
+if (finalStats.queueSize > 3) {
+  console.log('⚠️  Велика черга замовлень!');
+  console.log(`   Поточний розмір: ${finalStats.queueSize}`);
+  console.log('   Рекомендації:');
+  console.log('   • Додати більше кур\'єрів');
+  console.log('   • Перевірити розподіл типів транспорту');
+  console.log('');
+}
+
+const freePercentage = (finalStats.free / finalStats.total) * 100;
+if (freePercentage < 20) {
+  console.log('⚠️  Низька доступність кур\'єрів!');
+  console.log(`   Вільних: ${freePercentage.toFixed(0)}%`);
+  console.log('   Рекомендації:');
+  console.log('   • Додати більше кур\'єрів в систему');
+  console.log('   • Оптимізувати маршрути доставки');
+  console.log('');
+}
+
+console.log('╔══════════════════════════════════════════════════════════════╗');
+console.log('║  ✨ Stage 3 MVP завершено!                                  ║');
+console.log('║  Система працює автоматично з пріоритетами та чергою       ║');
+console.log('╚══════════════════════════════════════════════════════════════╝');
