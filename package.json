@@ -1,0 +1,14 @@
+{
+  "name": "vibe-hackathon",
+  "version": "1.0.0",
+  "description": "Flexible hackathon architecture using Strategy pattern",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
