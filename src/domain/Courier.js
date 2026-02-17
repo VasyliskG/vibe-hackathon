@@ -1,10 +1,18 @@
 const Location = require('./Location');
 
 /**
- * Courier — кур'єр з локацією та вантажопідйомністю
+ * Статуси кур'єра
+ */
+const CourierStatus = {
+  FREE: 'Free',
+  BUSY: 'Busy'
+};
+
+/**
+ * Courier — кур'єр з координатами та статусом
  */
 class Courier {
-  constructor(id, location, capacity = 1) {
+  constructor(id, location, status = CourierStatus.FREE) {
     if (!id || typeof id !== 'string') {
       throw new Error('Courier ID must be a non-empty string');
     }
@@ -13,16 +21,13 @@ class Courier {
       throw new Error('Location must be an instance of Location class');
     }
 
-    if (typeof capacity !== 'number' || capacity < 1) {
-      throw new Error('Capacity must be a number >= 1');
+    if (!Object.values(CourierStatus).includes(status)) {
+      throw new Error(`Status must be one of: ${Object.values(CourierStatus).join(', ')}`);
     }
 
     this._id = id;
     this._location = location;
-    this._capacity = capacity;
-    this._isAvailable = true;
-    this._currentLoad = 0;
-    this._assignedOrders = [];
+    this._status = status;
   }
 
   get id() {
@@ -33,45 +38,39 @@ class Courier {
     return this._location;
   }
 
-  get capacity() {
-    return this._capacity;
-  }
-
-  get isAvailable() {
-    return this._isAvailable && this._currentLoad < this._capacity;
-  }
-
-  get currentLoad() {
-    return this._currentLoad;
-  }
-
-  get assignedOrders() {
-    return [...this._assignedOrders]; // Повертаємо копію
+  get status() {
+    return this._status;
   }
 
   /**
-   * Призначити замовлення кур'єру
+   * Перевірка чи кур'єр вільний
    */
-  assignOrder(orderId) {
-    if (!this.isAvailable) {
-      throw new Error(`Courier ${this._id} is not available`);
-    }
-    this._currentLoad++;
-    this._assignedOrders.push(orderId);
+  isFree() {
+    return this._status === CourierStatus.FREE;
   }
 
   /**
-   * Змінити доступність
+   * Змінити статус на Busy
    */
-  setAvailability(isAvailable) {
-    if (typeof isAvailable !== 'boolean') {
-      throw new Error('Availability must be a boolean');
+  markAsBusy() {
+    if (this._status === CourierStatus.BUSY) {
+      throw new Error(`Courier ${this._id} is already busy`);
     }
-    this._isAvailable = isAvailable;
+    this._status = CourierStatus.BUSY;
   }
 
   /**
-   * Оновити локацію
+   * Змінити статус на Free
+   */
+  markAsFree() {
+    if (this._status === CourierStatus.FREE) {
+      throw new Error(`Courier ${this._id} is already free`);
+    }
+    this._status = CourierStatus.FREE;
+  }
+
+  /**
+   * Оновити локацію кур'єра
    */
   updateLocation(newLocation) {
     if (!(newLocation instanceof Location)) {
@@ -80,9 +79,23 @@ class Courier {
     this._location = newLocation;
   }
 
+  /**
+   * Експорт у JSON
+   */
+  toJSON() {
+    return {
+      id: this._id,
+      status: this._status,
+      coordinates: {
+        x: this._location.x,
+        y: this._location.y
+      }
+    };
+  }
+
   toString() {
-    return `Courier(${this._id}, ${this._location.toString()}, available: ${this.isAvailable}, load: ${this._currentLoad}/${this._capacity})`;
+    return `Courier(${this._id}, ${this._location.toString()}, ${this._status})`;
   }
 }
 
-module.exports = Courier;
+module.exports = { Courier, CourierStatus };

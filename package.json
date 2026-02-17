@@ -1,14 +1,16 @@
 {
   "name": "vibe-hackathon",
   "version": "1.0.0",
-  "description": "Flexible hackathon architecture using Strategy pattern",
+  "description": "Stage 1 MVP: Order assignment system with Dijkstra",
   "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
     "start": "node src/index.js",
+    "map": "node examples/map-demo.js",
+    "pathfinding": "node examples/pathfinding-demo.js",
     "dev": "node --watch src/index.js"
   },
-  "keywords": [],
+  "keywords": ["delivery", "assignment", "mvp", "pathfinding", "dijkstra"],
   "author": "",
   "license": "ISC"
 }
