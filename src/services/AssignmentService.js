@@ -1,41 +1,30 @@
 const PathFinder = require('../utils/PathFinder');
+const DistanceCalculator = require('../utils/DistanceCalculator');
 
 /**
- * AssignmentService — Stage 1 MVP з алгоритмом Дейкстри
- * Призначення замовлень найближчим вільним кур'єрам з урахуванням реального шляху
+ * AssignmentService — призначення замовлень з урахуванням ваги та транспорту
  */
 class AssignmentService {
-  constructor(couriers = [], cityMap = null) {
+  constructor(couriers = [], cityMap = null, usePathfinding = true) {
     this._couriers = couriers;
     this._cityMap = cityMap;
+    this._usePathfinding = usePathfinding;  // true = Dijkstra, false = Manhattan/Euclidean
   }
 
-  /**
-   * Встановити карту міста
-   */
   setMap(cityMap) {
     this._cityMap = cityMap;
   }
 
-  /**
-   * Отримати всіх кур'єрів
-   */
   getCouriers() {
     return [...this._couriers];
   }
 
-  /**
-   * Додати кур'єра
-   */
   addCourier(courier) {
     this._couriers.push(courier);
   }
 
   /**
-   * Stage 1 MVP: Призначити замовлення з алгоритмом Дейкстри
-   *
-   * @param {Order} order - Замовлення для призначення
-   * @returns {Object} JSON з результатом
+   * Призначити замовлення з урахуванням ваги та типу транспорту
    */
   assign(order) {
     if (!order) {
@@ -46,33 +35,48 @@ class AssignmentService {
       throw new Error(`Order ${order.id} is already assigned`);
     }
 
-    // 1. Знайти всіх кур'єрів зі статусом Free
+    // 1. Знайти всіх вільних кур'єрів
     const freeCouriers = this._couriers.filter(c => c.isFree());
 
     if (freeCouriers.length === 0) {
       return {
-        message: "No couriers available"
+        message: "No couriers available",
+        reason: "all_busy"
       };
     }
 
-    // 2. Якщо є карта - використовувати Дейкстру, інакше - Евклідову відстань
+    // ⬇️ НОВА ЛОГІКА: Фільтрувати кур'єрів за можливістю перевезти вагу
+    const suitableCouriers = freeCouriers.filter(c => c.canCarryWeight(order.weight));
+
+    if (suitableCouriers.length === 0) {
+      // ⬇️ ДЕТАЛЬНА ПОМИЛКА
+      return {
+        message: "No couriers available",
+        reason: "weight_too_heavy",
+        orderWeight: order.weight,
+        availableCouriers: freeCouriers.map(c => ({
+          id: c.id,
+          transportType: c.transportType.name,
+          maxWeight: c.transportType.maxWeight
+        }))
+      };
+    }
+
+    // 2. Знайти найближчого підходящого кур'єра
     let nearestCourier = null;
     let minDistance = Infinity;
     let foundPath = null;
 
-    if (this._cityMap) {
-      // Використовуємо алгоритм Дейкстри для реального шляху
-      console.log(`   🗺️  Використання алгоритму Дейкстри...`);
-
-      // Оптимізація: знайти відстані до всіх кур'єрів за один прохід
-      const targetLocations = freeCouriers.map(c => c.location);
+    if (this._usePathfinding && this._cityMap) {
+      // Використовуємо алгоритм Дейкстри
+      const targetLocations = suitableCouriers.map(c => c.location);
       const distances = PathFinder.findDistancesToMultiple(
           this._cityMap,
           order.restaurantLocation,
           targetLocations
       );
 
-      for (const courier of freeCouriers) {
+      for (const courier of suitableCouriers) {
         const key = `${courier.location.x},${courier.location.y}`;
         const distance = distances.get(key);
 
@@ -82,7 +86,6 @@ class AssignmentService {
         }
       }
 
-      // Знайти повний шлях для найближчого кур'єра
       if (nearestCourier) {
         const pathResult = PathFinder.findPath(
             this._cityMap,
@@ -97,15 +100,14 @@ class AssignmentService {
       }
 
     } else {
-      // Fallback: використовувати Евклідову відстань
-      console.warn('   ⚠️  Карта не встановлена, використовується Евклідова відстань');
+      // Fallback: Manhattan або Euclidean відстань
+      const method = this._cityMap ? 'manhattan' : 'euclidean';
 
-      const DistanceCalculator = require('../utils/DistanceCalculator');
-
-      for (const courier of freeCouriers) {
+      for (const courier of suitableCouriers) {
         const distance = DistanceCalculator.calculate(
             order.restaurantLocation,
-            courier.location
+            courier.location,
+            method
         );
 
         if (distance < minDistance) {
@@ -117,7 +119,8 @@ class AssignmentService {
 
     if (!nearestCourier) {
       return {
-        message: "No couriers available"
+        message: "No couriers available",
+        reason: "no_path_found"
       };
     }
 
@@ -127,14 +130,17 @@ class AssignmentService {
     // 4. Змінити його статус на Busy
     nearestCourier.markAsBusy();
 
-    // 5. Повернути результат
+    // ⬇️ РОЗШИРЕНИЙ РЕЗУЛЬТАТ
     const result = {
       orderId: order.id,
       assignedCourierId: nearestCourier.id,
-      distance: minDistance
+      courierTransportType: nearestCourier.transportType.name,
+      courierMaxWeight: nearestCourier.transportType.maxWeight,
+      orderWeight: order.weight,
+      distance: Math.round(minDistance * 100) / 100,
+      distanceType: this._usePathfinding && this._cityMap ? 'pathfinding' : 'straight'
     };
 
-    // Додати шлях якщо знайдено
     if (foundPath) {
       result.path = foundPath;
       result.pathLength = foundPath.length;
@@ -150,10 +156,26 @@ class AssignmentService {
     const free = this._couriers.filter(c => c.isFree()).length;
     const busy = this._couriers.filter(c => !c.isFree()).length;
 
+    // ⬇️ НОВА СТАТИСТИКА ПО ТРАНСПОРТУ
+    const byTransport = {};
+    this._couriers.forEach(c => {
+      const type = c.transportType.name;
+      if (!byTransport[type]) {
+        byTransport[type] = { total: 0, free: 0, busy: 0 };
+      }
+      byTransport[type].total++;
+      if (c.isFree()) {
+        byTransport[type].free++;
+      } else {
+        byTransport[type].busy++;
+      }
+    });
+
     return {
       total: this._couriers.length,
       free: free,
-      busy: busy
+      busy: busy,
+      byTransport: byTransport  // ⬅️ ДОДАНО
     };
   }
 }

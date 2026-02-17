@@ -1,0 +1,1194 @@
+{
+  "timestamp": "2026-02-17T17:30:24.122Z",
+  "version": "Stage 1 MVP",
+  "algorithm": "Dijkstra with weight constraints",
+  "map": {
+    "size": 100,
+    "walkableCells": 8572,
+    "density": "85.72%"
+  },
+  "couriers": [
+    {
+      "id": "courier-1",
+      "status": "Busy",
+      "transportType": "walker",
+      "maxWeight": 5,
+      "coordinates": {
+        "x": 55,
+        "y": 62
+      }
+    },
+    {
+      "id": "courier-2",
+      "status": "Busy",
+      "transportType": "walker",
+      "maxWeight": 5,
+      "coordinates": {
+        "x": 56,
+        "y": 52
+      }
+    },
+    {
+      "id": "courier-3",
+      "status": "Busy",
+      "transportType": "bicycle",
+      "maxWeight": 15,
+      "coordinates": {
+        "x": 47,
+        "y": 43
+      }
+    },
+    {
+      "id": "courier-4",
+      "status": "Busy",
+      "transportType": "bicycle",
+      "maxWeight": 15,
+      "coordinates": {
+        "x": 26,
+        "y": 67
+      }
+    },
+    {
+      "id": "courier-5",
+      "status": "Busy",
+      "transportType": "scooter",
+      "maxWeight": 50,
+      "coordinates": {
+        "x": 59,
+        "y": 93
+      }
+    },
+    {
+      "id": "courier-6",
+      "status": "Busy",
+      "transportType": "car",
+      "maxWeight": 50,
+      "coordinates": {
+        "x": 27,
+        "y": 53
+      }
+    },
+    {
+      "id": "courier-7",
+      "status": "Busy",
+      "transportType": "car",
+      "maxWeight": 50,
+      "coordinates": {
+        "x": 66,
+        "y": 48
+      }
+    }
+  ],
+  "orders": [
+    {
+      "id": "order-1",
+      "location": {
+        "x": 89,
+        "y": 31
+      },
+      "weight": 2,
+      "assignedCourierId": "courier-2"
+    },
+    {
+      "id": "order-2",
+      "location": {
+        "x": 89,
+        "y": 68
+      },
+      "weight": 4,
+      "assignedCourierId": "courier-1"
+    },
+    {
+      "id": "order-3",
+      "location": {
+        "x": 15,
+        "y": 66
+      },
+      "weight": 8,
+      "assignedCourierId": "courier-4"
+    },
+    {
+      "id": "order-4",
+      "location": {
+        "x": 61,
+        "y": 39
+      },
+      "weight": 12,
+      "assignedCourierId": "courier-3"
+    },
+    {
+      "id": "order-5",
+      "location": {
+        "x": 26,
+        "y": 3
+      },
+      "weight": 20,
+      "assignedCourierId": "courier-6"
+    },
+    {
+      "id": "order-6",
+      "location": {
+        "x": 73,
+        "y": 65
+      },
+      "weight": 35,
+      "assignedCourierId": "courier-5"
+    },
+    {
+      "id": "order-7",
+      "location": {
+        "x": 49,
+        "y": 87
+      },
+      "weight": 48,
+      "assignedCourierId": null
+    },
+    {
+      "id": "order-8",
+      "location": {
+        "x": 13,
+        "y": 66
+      },
+      "weight": 60,
+      "assignedCourierId": null
+    }
+  ],
+  "assignments": [
+    {
+      "orderId": "order-1",
+      "assignedCourierId": "courier-2",
+      "courierTransportType": "walker",
+      "courierMaxWeight": 5,
+      "orderWeight": 2,
+      "distance": 54,
+      "distanceType": "pathfinding",
+      "path": [
+        {
+          "x": 89,
+          "y": 31
+        },
+        {
+          "x": 88,
+          "y": 31
+        },
+        {
+          "x": 87,
+          "y": 31
+        },
+        {
+          "x": 86,
+          "y": 31
+        },
+        {
+          "x": 85,
+          "y": 31
+        },
+        {
+          "x": 84,
+          "y": 31
+        },
+        {
+          "x": 83,
+          "y": 31
+        },
+        {
+          "x": 82,
+          "y": 31
+        },
+        {
+          "x": 81,
+          "y": 31
+        },
+        {
+          "x": 80,
+          "y": 31
+        },
+        {
+          "x": 79,
+          "y": 31
+        },
+        {
+          "x": 78,
+          "y": 31
+        },
+        {
+          "x": 77,
+          "y": 31
+        },
+        {
+          "x": 76,
+          "y": 31
+        },
+        {
+          "x": 76,
+          "y": 32
+        },
+        {
+          "x": 75,
+          "y": 32
+        },
+        {
+          "x": 74,
+          "y": 32
+        },
+        {
+          "x": 73,
+          "y": 32
+        },
+        {
+          "x": 73,
+          "y": 33
+        },
+        {
+          "x": 73,
+          "y": 34
+        },
+        {
+          "x": 72,
+          "y": 34
+        },
+        {
+          "x": 71,
+          "y": 34
+        },
+        {
+          "x": 70,
+          "y": 34
+        },
+        {
+          "x": 69,
+          "y": 34
+        },
+        {
+          "x": 68,
+          "y": 34
+        },
+        {
+          "x": 67,
+          "y": 34
+        },
+        {
+          "x": 66,
+          "y": 34
+        },
+        {
+          "x": 65,
+          "y": 34
+        },
+        {
+          "x": 64,
+          "y": 34
+        },
+        {
+          "x": 63,
+          "y": 34
+        },
+        {
+          "x": 62,
+          "y": 34
+        },
+        {
+          "x": 61,
+          "y": 34
+        },
+        {
+          "x": 60,
+          "y": 34
+        },
+        {
+          "x": 59,
+          "y": 34
+        },
+        {
+          "x": 59,
+          "y": 35
+        },
+        {
+          "x": 59,
+          "y": 36
+        },
+        {
+          "x": 58,
+          "y": 36
+        },
+        {
+          "x": 58,
+          "y": 37
+        },
+        {
+          "x": 58,
+          "y": 38
+        },
+        {
+          "x": 58,
+          "y": 39
+        },
+        {
+          "x": 58,
+          "y": 40
+        },
+        {
+          "x": 58,
+          "y": 41
+        },
+        {
+          "x": 58,
+          "y": 42
+        },
+        {
+          "x": 58,
+          "y": 43
+        },
+        {
+          "x": 58,
+          "y": 44
+        },
+        {
+          "x": 58,
+          "y": 45
+        },
+        {
+          "x": 58,
+          "y": 46
+        },
+        {
+          "x": 58,
+          "y": 47
+        },
+        {
+          "x": 57,
+          "y": 47
+        },
+        {
+          "x": 57,
+          "y": 48
+        },
+        {
+          "x": 57,
+          "y": 49
+        },
+        {
+          "x": 57,
+          "y": 50
+        },
+        {
+          "x": 57,
+          "y": 51
+        },
+        {
+          "x": 56,
+          "y": 51
+        },
+        {
+          "x": 56,
+          "y": 52
+        }
+      ],
+      "pathLength": 55
+    },
+    {
+      "orderId": "order-2",
+      "assignedCourierId": "courier-1",
+      "courierTransportType": "walker",
+      "courierMaxWeight": 5,
+      "orderWeight": 4,
+      "distance": 40,
+      "distanceType": "pathfinding",
+      "path": [
+        {
+          "x": 89,
+          "y": 68
+        },
+        {
+          "x": 89,
+          "y": 67
+        },
+        {
+          "x": 88,
+          "y": 67
+        },
+        {
+          "x": 87,
+          "y": 67
+        },
+        {
+          "x": 86,
+          "y": 67
+        },
+        {
+          "x": 85,
+          "y": 67
+        },
+        {
+          "x": 84,
+          "y": 67
+        },
+        {
+          "x": 83,
+          "y": 67
+        },
+        {
+          "x": 82,
+          "y": 67
+        },
+        {
+          "x": 81,
+          "y": 67
+        },
+        {
+          "x": 80,
+          "y": 67
+        },
+        {
+          "x": 79,
+          "y": 67
+        },
+        {
+          "x": 78,
+          "y": 67
+        },
+        {
+          "x": 77,
+          "y": 67
+        },
+        {
+          "x": 76,
+          "y": 67
+        },
+        {
+          "x": 75,
+          "y": 67
+        },
+        {
+          "x": 75,
+          "y": 66
+        },
+        {
+          "x": 74,
+          "y": 66
+        },
+        {
+          "x": 74,
+          "y": 65
+        },
+        {
+          "x": 73,
+          "y": 65
+        },
+        {
+          "x": 72,
+          "y": 65
+        },
+        {
+          "x": 71,
+          "y": 65
+        },
+        {
+          "x": 70,
+          "y": 65
+        },
+        {
+          "x": 69,
+          "y": 65
+        },
+        {
+          "x": 68,
+          "y": 65
+        },
+        {
+          "x": 67,
+          "y": 65
+        },
+        {
+          "x": 66,
+          "y": 65
+        },
+        {
+          "x": 65,
+          "y": 65
+        },
+        {
+          "x": 64,
+          "y": 65
+        },
+        {
+          "x": 63,
+          "y": 65
+        },
+        {
+          "x": 62,
+          "y": 65
+        },
+        {
+          "x": 62,
+          "y": 64
+        },
+        {
+          "x": 61,
+          "y": 64
+        },
+        {
+          "x": 60,
+          "y": 64
+        },
+        {
+          "x": 59,
+          "y": 64
+        },
+        {
+          "x": 58,
+          "y": 64
+        },
+        {
+          "x": 58,
+          "y": 63
+        },
+        {
+          "x": 57,
+          "y": 63
+        },
+        {
+          "x": 57,
+          "y": 62
+        },
+        {
+          "x": 56,
+          "y": 62
+        },
+        {
+          "x": 55,
+          "y": 62
+        }
+      ],
+      "pathLength": 41
+    },
+    {
+      "orderId": "order-3",
+      "assignedCourierId": "courier-4",
+      "courierTransportType": "bicycle",
+      "courierMaxWeight": 15,
+      "orderWeight": 8,
+      "distance": 12,
+      "distanceType": "pathfinding",
+      "path": [
+        {
+          "x": 15,
+          "y": 66
+        },
+        {
+          "x": 16,
+          "y": 66
+        },
+        {
+          "x": 17,
+          "y": 66
+        },
+        {
+          "x": 17,
+          "y": 67
+        },
+        {
+          "x": 18,
+          "y": 67
+        },
+        {
+          "x": 19,
+          "y": 67
+        },
+        {
+          "x": 20,
+          "y": 67
+        },
+        {
+          "x": 21,
+          "y": 67
+        },
+        {
+          "x": 22,
+          "y": 67
+        },
+        {
+          "x": 23,
+          "y": 67
+        },
+        {
+          "x": 24,
+          "y": 67
+        },
+        {
+          "x": 25,
+          "y": 67
+        },
+        {
+          "x": 26,
+          "y": 67
+        }
+      ],
+      "pathLength": 13
+    },
+    {
+      "orderId": "order-4",
+      "assignedCourierId": "courier-3",
+      "courierTransportType": "bicycle",
+      "courierMaxWeight": 15,
+      "orderWeight": 12,
+      "distance": 20,
+      "distanceType": "pathfinding",
+      "path": [
+        {
+          "x": 61,
+          "y": 39
+        },
+        {
+          "x": 60,
+          "y": 39
+        },
+        {
+          "x": 59,
+          "y": 39
+        },
+        {
+          "x": 58,
+          "y": 39
+        },
+        {
+          "x": 57,
+          "y": 39
+        },
+        {
+          "x": 57,
+          "y": 40
+        },
+        {
+          "x": 56,
+          "y": 40
+        },
+        {
+          "x": 55,
+          "y": 40
+        },
+        {
+          "x": 55,
+          "y": 41
+        },
+        {
+          "x": 55,
+          "y": 42
+        },
+        {
+          "x": 54,
+          "y": 42
+        },
+        {
+          "x": 53,
+          "y": 42
+        },
+        {
+          "x": 53,
+          "y": 41
+        },
+        {
+          "x": 52,
+          "y": 41
+        },
+        {
+          "x": 51,
+          "y": 41
+        },
+        {
+          "x": 51,
+          "y": 42
+        },
+        {
+          "x": 50,
+          "y": 42
+        },
+        {
+          "x": 49,
+          "y": 42
+        },
+        {
+          "x": 48,
+          "y": 42
+        },
+        {
+          "x": 47,
+          "y": 42
+        },
+        {
+          "x": 47,
+          "y": 43
+        }
+      ],
+      "pathLength": 21
+    },
+    {
+      "orderId": "order-5",
+      "assignedCourierId": "courier-6",
+      "courierTransportType": "car",
+      "courierMaxWeight": 50,
+      "orderWeight": 20,
+      "distance": 57,
+      "distanceType": "pathfinding",
+      "path": [
+        {
+          "x": 26,
+          "y": 3
+        },
+        {
+          "x": 25,
+          "y": 3
+        },
+        {
+          "x": 25,
+          "y": 4
+        },
+        {
+          "x": 25,
+          "y": 5
+        },
+        {
+          "x": 25,
+          "y": 6
+        },
+        {
+          "x": 25,
+          "y": 7
+        },
+        {
+          "x": 25,
+          "y": 8
+        },
+        {
+          "x": 25,
+          "y": 9
+        },
+        {
+          "x": 25,
+          "y": 10
+        },
+        {
+          "x": 25,
+          "y": 11
+        },
+        {
+          "x": 26,
+          "y": 11
+        },
+        {
+          "x": 26,
+          "y": 12
+        },
+        {
+          "x": 26,
+          "y": 13
+        },
+        {
+          "x": 26,
+          "y": 14
+        },
+        {
+          "x": 26,
+          "y": 15
+        },
+        {
+          "x": 26,
+          "y": 16
+        },
+        {
+          "x": 26,
+          "y": 17
+        },
+        {
+          "x": 26,
+          "y": 18
+        },
+        {
+          "x": 26,
+          "y": 19
+        },
+        {
+          "x": 26,
+          "y": 20
+        },
+        {
+          "x": 25,
+          "y": 20
+        },
+        {
+          "x": 25,
+          "y": 21
+        },
+        {
+          "x": 25,
+          "y": 22
+        },
+        {
+          "x": 25,
+          "y": 23
+        },
+        {
+          "x": 25,
+          "y": 24
+        },
+        {
+          "x": 25,
+          "y": 25
+        },
+        {
+          "x": 25,
+          "y": 26
+        },
+        {
+          "x": 25,
+          "y": 27
+        },
+        {
+          "x": 25,
+          "y": 28
+        },
+        {
+          "x": 25,
+          "y": 29
+        },
+        {
+          "x": 25,
+          "y": 30
+        },
+        {
+          "x": 25,
+          "y": 31
+        },
+        {
+          "x": 25,
+          "y": 32
+        },
+        {
+          "x": 24,
+          "y": 32
+        },
+        {
+          "x": 24,
+          "y": 33
+        },
+        {
+          "x": 24,
+          "y": 34
+        },
+        {
+          "x": 24,
+          "y": 35
+        },
+        {
+          "x": 25,
+          "y": 35
+        },
+        {
+          "x": 25,
+          "y": 36
+        },
+        {
+          "x": 25,
+          "y": 37
+        },
+        {
+          "x": 25,
+          "y": 38
+        },
+        {
+          "x": 25,
+          "y": 39
+        },
+        {
+          "x": 25,
+          "y": 40
+        },
+        {
+          "x": 25,
+          "y": 41
+        },
+        {
+          "x": 25,
+          "y": 42
+        },
+        {
+          "x": 26,
+          "y": 42
+        },
+        {
+          "x": 26,
+          "y": 43
+        },
+        {
+          "x": 26,
+          "y": 44
+        },
+        {
+          "x": 26,
+          "y": 45
+        },
+        {
+          "x": 26,
+          "y": 46
+        },
+        {
+          "x": 26,
+          "y": 47
+        },
+        {
+          "x": 26,
+          "y": 48
+        },
+        {
+          "x": 26,
+          "y": 49
+        },
+        {
+          "x": 27,
+          "y": 49
+        },
+        {
+          "x": 27,
+          "y": 50
+        },
+        {
+          "x": 27,
+          "y": 51
+        },
+        {
+          "x": 27,
+          "y": 52
+        },
+        {
+          "x": 27,
+          "y": 53
+        }
+      ],
+      "pathLength": 58
+    },
+    {
+      "orderId": "order-6",
+      "assignedCourierId": "courier-5",
+      "courierTransportType": "scooter",
+      "courierMaxWeight": 50,
+      "orderWeight": 35,
+      "distance": 42,
+      "distanceType": "pathfinding",
+      "path": [
+        {
+          "x": 73,
+          "y": 65
+        },
+        {
+          "x": 72,
+          "y": 65
+        },
+        {
+          "x": 71,
+          "y": 65
+        },
+        {
+          "x": 70,
+          "y": 65
+        },
+        {
+          "x": 69,
+          "y": 65
+        },
+        {
+          "x": 68,
+          "y": 65
+        },
+        {
+          "x": 67,
+          "y": 65
+        },
+        {
+          "x": 66,
+          "y": 65
+        },
+        {
+          "x": 65,
+          "y": 65
+        },
+        {
+          "x": 64,
+          "y": 65
+        },
+        {
+          "x": 63,
+          "y": 65
+        },
+        {
+          "x": 62,
+          "y": 65
+        },
+        {
+          "x": 62,
+          "y": 66
+        },
+        {
+          "x": 62,
+          "y": 67
+        },
+        {
+          "x": 62,
+          "y": 68
+        },
+        {
+          "x": 62,
+          "y": 69
+        },
+        {
+          "x": 62,
+          "y": 70
+        },
+        {
+          "x": 62,
+          "y": 71
+        },
+        {
+          "x": 62,
+          "y": 72
+        },
+        {
+          "x": 62,
+          "y": 73
+        },
+        {
+          "x": 62,
+          "y": 74
+        },
+        {
+          "x": 62,
+          "y": 75
+        },
+        {
+          "x": 62,
+          "y": 76
+        },
+        {
+          "x": 62,
+          "y": 77
+        },
+        {
+          "x": 62,
+          "y": 78
+        },
+        {
+          "x": 62,
+          "y": 79
+        },
+        {
+          "x": 62,
+          "y": 80
+        },
+        {
+          "x": 62,
+          "y": 81
+        },
+        {
+          "x": 62,
+          "y": 82
+        },
+        {
+          "x": 62,
+          "y": 83
+        },
+        {
+          "x": 62,
+          "y": 84
+        },
+        {
+          "x": 62,
+          "y": 85
+        },
+        {
+          "x": 62,
+          "y": 86
+        },
+        {
+          "x": 62,
+          "y": 87
+        },
+        {
+          "x": 61,
+          "y": 87
+        },
+        {
+          "x": 61,
+          "y": 88
+        },
+        {
+          "x": 61,
+          "y": 89
+        },
+        {
+          "x": 61,
+          "y": 90
+        },
+        {
+          "x": 60,
+          "y": 90
+        },
+        {
+          "x": 60,
+          "y": 91
+        },
+        {
+          "x": 60,
+          "y": 92
+        },
+        {
+          "x": 59,
+          "y": 92
+        },
+        {
+          "x": 59,
+          "y": 93
+        }
+      ],
+      "pathLength": 43
+    },
+    {
+      "message": "No couriers available",
+      "reason": "all_busy"
+    },
+    {
+      "message": "No couriers available",
+      "reason": "all_busy"
+    }
+  ],
+  "summary": {
+    "totalCouriers": 7,
+    "totalOrders": 8,
+    "successfulAssignments": 6,
+    "failedAssignments": 2,
+    "successRate": "75.00%",
+    "byTransport": {
+      "walker": {
+        "total": 2,
+        "free": 0,
+        "busy": 2
+      },
+      "bicycle": {
+        "total": 2,
+        "free": 0,
+        "busy": 2
+      },
+      "scooter": {
+        "total": 1,
+        "free": 0,
+        "busy": 1
+      },
+      "car": {
+        "total": 2,
+        "free": 0,
+        "busy": 2
+      }
+    },
+    "failureReasons": {
+      "all_busy": 2
+    }
+  }
+}

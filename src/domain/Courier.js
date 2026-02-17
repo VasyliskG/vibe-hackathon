@@ -1,4 +1,5 @@
 const Location = require('./Location');
+const { TransportType, getTransportType, canCarry } = require('./TransportType');  // ⬅️ ІМПОРТ
 
 /**
  * Статуси кур'єра
@@ -9,10 +10,11 @@ const CourierStatus = {
 };
 
 /**
- * Courier — кур'єр з координатами та статусом
+ * Courier — кур'єр з координатами, статусом та типом транспорту
  */
 class Courier {
-  constructor(id, location, status = CourierStatus.FREE) {
+  // ⬇️ ДОДАНО transportTypeName
+  constructor(id, location, transportTypeName, status = CourierStatus.FREE) {
     if (!id || typeof id !== 'string') {
       throw new Error('Courier ID must be a non-empty string');
     }
@@ -27,6 +29,7 @@ class Courier {
 
     this._id = id;
     this._location = location;
+    this._transportType = getTransportType(transportTypeName);  // ⬅️ НОВЕ ПОЛЕ
     this._status = status;
   }
 
@@ -42,16 +45,23 @@ class Courier {
     return this._status;
   }
 
-  /**
-   * Перевірка чи кур'єр вільний
-   */
+  // ⬇️ НОВИЙ GETTER
+  get transportType() {
+    return this._transportType;
+  }
+
   isFree() {
     return this._status === CourierStatus.FREE;
   }
 
+  // ⬇️ НОВИЙ МЕТОД
   /**
-   * Змінити статус на Busy
+   * Перевірити чи кур'єр може перевезти вагу
    */
+  canCarryWeight(weight) {
+    return canCarry(this._transportType, weight);
+  }
+
   markAsBusy() {
     if (this._status === CourierStatus.BUSY) {
       throw new Error(`Courier ${this._id} is already busy`);
@@ -59,9 +69,6 @@ class Courier {
     this._status = CourierStatus.BUSY;
   }
 
-  /**
-   * Змінити статус на Free
-   */
   markAsFree() {
     if (this._status === CourierStatus.FREE) {
       throw new Error(`Courier ${this._id} is already free`);
@@ -69,9 +76,6 @@ class Courier {
     this._status = CourierStatus.FREE;
   }
 
-  /**
-   * Оновити локацію кур'єра
-   */
   updateLocation(newLocation) {
     if (!(newLocation instanceof Location)) {
       throw new Error('Location must be an instance of Location class');
@@ -79,13 +83,13 @@ class Courier {
     this._location = newLocation;
   }
 
-  /**
-   * Експорт у JSON
-   */
+  // ⬇️ ОНОВЛЕНИЙ toJSON
   toJSON() {
     return {
       id: this._id,
       status: this._status,
+      transportType: this._transportType.name,  // ⬅️ ДОДАНО
+      maxWeight: this._transportType.maxWeight,  // ⬅️ ДОДАНО
       coordinates: {
         x: this._location.x,
         y: this._location.y
@@ -93,8 +97,9 @@ class Courier {
     };
   }
 
+  // ⬇️ ОНОВЛЕНИЙ toString
   toString() {
-    return `Courier(${this._id}, ${this._location.toString()}, ${this._status})`;
+    return `Courier(${this._id}, ${this._location.toString()}, ${this._transportType.displayName}, Max: ${this._transportType.maxWeight}kg, ${this._status})`;
   }
 }
 
