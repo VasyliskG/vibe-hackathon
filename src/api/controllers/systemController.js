@@ -1,5 +1,7 @@
 const logger = require('../../utils/logger');
 const os = require('os');
+const eventBus = require('../../realtime/eventBus/EventBus');
+const { issueToken, ROLES } = require('../../realtime/websocket/auth');
 
 /**
  * System Controller - Health checks, metrics, and system operations
@@ -16,7 +18,7 @@ class SystemController {
       timestamp: new Date().toISOString(),
       uptime: `${Math.floor(uptime)}s`,
       environment: process.env.NODE_ENV || 'development',
-      version: '4.0.0'
+      version: '5.0.0'
     });
   }
 
@@ -28,6 +30,7 @@ class SystemController {
       const orders = req.app.locals.orders || [];
       const couriers = req.app.locals.couriers || [];
       const queueManager = req.app.locals.queueManager;
+      const metrics = req.app.locals.metrics;
 
       // Order statistics
       const orderStats = {
@@ -75,7 +78,9 @@ class SystemController {
         data: {
           orders: orderStats,
           couriers: courierStats,
-          system: systemStats
+          system: systemStats,
+          realtime: metrics ? metrics.getSnapshot() : {},
+          eventBus: eventBus.getStats()
         }
       });
     } catch (error) {
@@ -112,22 +117,26 @@ class SystemController {
         if (!order) break;
 
         try {
-          const result = assignmentService.assignOrder(order, couriers);
+          const result = assignmentService.assign(order, false);
 
-          if (result.assigned) {
+          if (!result.message) {
             // Assignment successful
             queueManager.removeOrder(order.id);
             results.push({
               orderId: order.id,
-              courierId: result.courier.id,
+              courierId: result.assignedCourierId,
               distance: result.distance,
-              reason: result.reason,
               success: true
+            });
+
+            eventBus.publish({
+              type: 'ORDER_ASSIGNED',
+              data: { orderId: order.id, courierId: result.assignedCourierId }
             });
 
             logger.info('Order auto-assigned', {
               orderId: order.id,
-              courierId: result.courier.id,
+              courierId: result.assignedCourierId,
               distance: result.distance
             });
           } else {
@@ -164,6 +173,35 @@ class SystemController {
         remaining: queueManager.getQueueSize(),
         results
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/system/token - Issue JWT for WebSocket auth (non-production)
+   */
+  static async issueToken(req, res, next) {
+    try {
+      if ((process.env.NODE_ENV || 'development') === 'production') {
+        return res.status(403).json({
+          success: false,
+          error: 'Forbidden',
+          message: 'Token issuance disabled in production'
+        });
+      }
+
+      const { userId, role, courierId } = req.body;
+      if (!Object.values(ROLES).includes(role)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Bad Request',
+          message: 'Invalid role'
+        });
+      }
+
+      const token = issueToken({ userId, role, courierId });
+      res.json({ success: true, token });
     } catch (error) {
       next(error);
     }
@@ -225,8 +263,8 @@ class SystemController {
       success: true,
       data: {
         service: 'Vibe Delivery System',
-        stage: '4 - Production Ready',
-        version: '4.0.0',
+        stage: '5 - Realtime Dispatch',
+        version: '5.0.0',
         features: [
           'REST API',
           'Order Lifecycle Management',
@@ -236,7 +274,9 @@ class SystemController {
           'ENV Configuration',
           'Automated Tests',
           'Error Handling',
-          'Input Validation'
+          'Input Validation',
+          'WebSocket Realtime',
+          'EventBus'
         ],
         map: {
           size: cityMap ? `${cityMap.width}x${cityMap.height}` : 'N/A',

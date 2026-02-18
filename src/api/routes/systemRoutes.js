@@ -1,5 +1,8 @@
 const express = require('express');
+const { body } = require('express-validator');
+
 const SystemController = require('../controllers/systemController');
+const validate = require('../middleware/validator');
 
 const router = express.Router();
 
@@ -33,5 +36,15 @@ router.post('/auto-assign', SystemController.autoAssign);
  */
 router.post('/reset', SystemController.reset);
 
-module.exports = router;
+/**
+ * @route POST /api/system/token
+ * @desc Issue a token for WebSocket authentication (non-production)
+ */
+router.post('/token',
+  body('userId').notEmpty().withMessage('userId is required'),
+  body('role').notEmpty().withMessage('role is required'),
+  validate,
+  SystemController.issueToken
+);
 
+module.exports = router;

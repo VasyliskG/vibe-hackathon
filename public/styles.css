@@ -1,0 +1,129 @@
+:root {
+  --bg: #0f1218;
+  --panel: #171c24;
+  --text: #e4e8f0;
+  --muted: #8b94a7;
+  --success: #2ecc71;
+  --error: #e74c3c;
+  --warning: #f1c40f;
+  --info: #3498db;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #121620;
+  border-bottom: 1px solid #242b3b;
+}
+
+.connection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--error);
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+  padding: 16px 24px 32px;
+}
+
+.panel {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #242b3b;
+}
+
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.map canvas {
+  width: 100%;
+  height: auto;
+  background: #0b0f15;
+  border-radius: 10px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat {
+  background: #111622;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.stat .label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stat .value {
+  font-size: 20px;
+  margin-top: 6px;
+}
+
+.feed-list,
+.queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow: auto;
+}
+
+.feed-item,
+.queue-item {
+  background: #111622;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+.badge.info { background: rgba(52, 152, 219, 0.2); color: var(--info); }
+.badge.success { background: rgba(46, 204, 113, 0.2); color: var(--success); }
+.badge.error { background: rgba(231, 76, 60, 0.2); color: var(--error); }
+.badge.warning { background: rgba(241, 196, 15, 0.2); color: var(--warning); }
+

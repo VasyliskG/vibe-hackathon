@@ -1,6 +1,7 @@
 const { Courier, CourierStatus } = require('../../domain/Courier');
 const Location = require('../../domain/Location');
 const logger = require('../../utils/logger');
+const eventBus = require('../../realtime/eventBus/EventBus');
 
 /**
  * Courier Controller - Handles all courier-related endpoints
@@ -100,6 +101,11 @@ class CourierController {
 
       logger.info('Courier created', { courierId: id, transportType });
 
+      eventBus.publish({
+        type: 'COURIER_STATUS_CHANGED',
+        data: { courierId: id, status: CourierStatus.FREE }
+      });
+
       res.status(201).json({
         success: true,
         message: 'Courier created successfully',
@@ -141,6 +147,11 @@ class CourierController {
 
       courier.updateLocation(new Location(x, y));
       await dataService.saveCouriers(couriers);
+
+      eventBus.publish({
+        type: 'COURIER_STATUS_CHANGED',
+        data: { courierId: id, status: courier.status, location: { x, y } }
+      });
 
       logger.info('Courier location updated', { courierId: id, x, y });
 
@@ -187,6 +198,11 @@ class CourierController {
 
       await dataService.saveCouriers(couriers);
       logger.info('Courier status updated', { courierId: id, newStatus: status });
+
+      eventBus.publish({
+        type: 'COURIER_STATUS_CHANGED',
+        data: { courierId: id, status }
+      });
 
       res.json({
         success: true,

@@ -5,9 +5,7 @@ describe('API Integration Tests', () => {
   let server;
 
   beforeAll(async () => {
-    // Server is initialized in server.js
-    // Wait a bit for initialization
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await app.init();
   });
 
   afterAll(async () => {
@@ -22,7 +20,7 @@ describe('API Integration Tests', () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('service');
-      expect(response.body).toHaveProperty('version', '4.0.0');
+      expect(response.body).toHaveProperty('version', '5.0.0');
       expect(response.body).toHaveProperty('status', 'running');
     });
 

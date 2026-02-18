@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vibe Dispatch Dashboard</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Vibe Dispatch Dashboard</h1>
+      <div class="connection" id="connectionStatus">
+        <span class="dot" id="connectionDot"></span>
+        <span id="connectionText">Disconnected</span>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel map">
+        <h2>Live Map</h2>
+        <canvas id="mapCanvas" width="600" height="600"></canvas>
+      </section>
+
+      <section class="panel stats">
+        <h2>Realtime Stats</h2>
+        <div class="stats-grid" id="statsGrid"></div>
+      </section>
+
+      <section class="panel feed">
+        <h2>Activity Feed</h2>
+        <div class="feed-list" id="feedList"></div>
+      </section>
+
+      <section class="panel queue">
+        <h2>Queue Monitor</h2>
+        <div class="queue-list" id="queueList"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/ws/socket.io.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

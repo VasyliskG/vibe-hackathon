@@ -6,28 +6,53 @@ const config = require('./src/config/env');
 const logger = require('./src/utils/logger');
 const requestLogger = require('./src/api/middleware/requestLogger');
 const { errorHandler, notFoundHandler } = require('./src/api/middleware/errorHandler');
+const http = require('http');
+const rateLimit = require('express-rate-limit');
 
 // Routes
 const orderRoutes = require('./src/api/routes/orderRoutes');
 const courierRoutes = require('./src/api/routes/courierRoutes');
 const systemRoutes = require('./src/api/routes/systemRoutes');
+const simulationRoutes = require('./src/api/routes/simulationRoutes');
 
 // Services
 const DataService = require('./src/services/DataService');
 const QueueManager = require('./src/services/QueueManager');
 const AssignmentService = require('./src/services/AssignmentService');
 const MapGenerator = require('./src/services/MapGenerator');
+const MetricsService = require('./src/services/MetricsService');
+const SlaMonitor = require('./src/services/SlaMonitor');
+const { createWebSocketServer } = require('./src/realtime/websocket');
 const Map = require('./src/domain/Map');
 const Location = require('./src/domain/Location');
 const { Courier, CourierStatus } = require('./src/domain/Courier');
+const eventBus = require('./src/realtime/eventBus/EventBus');
 
 // Initialize Express
 const app = express();
 
 // Security & Performance Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      scriptSrcElem: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: ["'self'", "ws:", "wss:"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      frameAncestors: ["'none'"]
+    }
+  }
+}));
 app.use(compression());
 app.use(cors({ origin: config.corsOrigin }));
+app.use(rateLimit(config.rateLimit));
+
+// Static dashboard
+app.use(express.static('public'));
 
 // Body Parsing
 app.use(express.json());
@@ -41,6 +66,10 @@ const dataService = new DataService(config.dataDir);
 const queueManager = new QueueManager();
 let assignmentService;
 let cityMap;
+
+const metricsService = new MetricsService(config.metricsWindowMs);
+app.locals.metrics = metricsService;
+app.locals.config = config;
 
 // Store services in app.locals for access in controllers
 app.locals.dataService = dataService;
@@ -71,10 +100,6 @@ async function initializeSystem() {
     }
 
     app.locals.cityMap = cityMap;
-
-    // Initialize AssignmentService
-    assignmentService = new AssignmentService(cityMap);
-    app.locals.assignmentService = assignmentService;
 
     // Load existing couriers or create defaults
     const couriersData = await dataService.loadCouriers();
@@ -115,6 +140,10 @@ async function initializeSystem() {
     app.locals.couriers = couriers;
     logger.info(`✅ ${couriers.length} couriers ready`);
 
+    // Initialize AssignmentService
+    assignmentService = new AssignmentService(couriers, cityMap, config.usePathfinding);
+    app.locals.assignmentService = assignmentService;
+
     // Load existing orders
     const ordersData = await dataService.loadOrders();
     if (ordersData.length > 0) {
@@ -141,22 +170,26 @@ async function initializeSystem() {
   }
 }
 
+app.init = initializeSystem;
+
 // API Routes
 app.use('/api/orders', orderRoutes);
 app.use('/api/couriers', courierRoutes);
 app.use('/api/system', systemRoutes);
+app.use('/api/simulation', simulationRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
     service: 'Vibe Delivery System',
-    stage: '4 - Production Ready',
-    version: '4.0.0',
+    stage: '5 - Realtime Dispatch',
+    version: '5.0.0',
     status: 'running',
     endpoints: {
       orders: '/api/orders',
       couriers: '/api/couriers',
-      system: '/api/system'
+      system: '/api/system',
+      simulation: '/api/simulation'
     }
   });
 });
@@ -169,7 +202,35 @@ app.use(errorHandler);
 async function startServer() {
   await initializeSystem();
 
-  const server = app.listen(config.port, () => {
+  eventBus.subscribe('ORDER_CREATED', event => metricsService.recordEvent(event.type, event.timestamp));
+  eventBus.subscribe('ORDER_ASSIGNED', event => metricsService.recordEvent(event.type, event.timestamp));
+  eventBus.subscribe('ORDER_COMPLETED', event => metricsService.recordEvent(event.type, event.timestamp));
+  eventBus.subscribe('ORDER_CANCELLED', event => metricsService.recordEvent(event.type, event.timestamp));
+  eventBus.subscribe('ORDER_QUEUED', event => metricsService.recordEvent(event.type, event.timestamp));
+  eventBus.subscribe('COURIER_STATUS_CHANGED', event => metricsService.recordEvent(event.type, event.timestamp));
+  eventBus.subscribe('QUEUE_UPDATED', event => metricsService.recordEvent(event.type, event.timestamp));
+  eventBus.subscribe('SLA_VIOLATION', event => metricsService.recordEvent(event.type, event.timestamp));
+
+  const httpServer = http.createServer(app);
+  const io = createWebSocketServer(httpServer, app);
+
+  io.on('connection', () => {
+    metricsService.setWsConnections(io.engine.clientsCount);
+  });
+
+  io.on('disconnect', () => {
+    metricsService.setWsConnections(io.engine.clientsCount);
+  });
+
+  const slaMonitor = new SlaMonitor({
+    queueManager,
+    ordersProvider: () => app.locals.orders || [],
+    config,
+    metrics: metricsService
+  });
+  slaMonitor.start();
+
+  const server = httpServer.listen(config.port, () => {
     logger.info(`🚀 Server running on port ${config.port}`);
     logger.info(`📊 Environment: ${config.nodeEnv}`);
     logger.info(`📝 Log level: ${config.logLevel}`);
@@ -179,6 +240,7 @@ async function startServer() {
   // Graceful shutdown
   process.on('SIGTERM', () => {
     logger.info('SIGTERM received, shutting down gracefully...');
+    slaMonitor.stop();
     server.close(() => {
       logger.info('Server closed');
       process.exit(0);
@@ -187,6 +249,7 @@ async function startServer() {
 
   process.on('SIGINT', () => {
     logger.info('SIGINT received, shutting down gracefully...');
+    slaMonitor.stop();
     server.close(() => {
       logger.info('Server closed');
       process.exit(0);

@@ -1,6 +1,7 @@
 const { Order, OrderStatus } = require('../../domain/Order');
 const Location = require('../../domain/Location');
 const logger = require('../../utils/logger');
+const eventBus = require('../../realtime/eventBus/EventBus');
 
 /**
  * Order Controller - Handles all order-related endpoints
@@ -101,6 +102,11 @@ class OrderController {
       // Save to persistence
       await dataService.saveOrders(orders);
 
+      eventBus.publish({
+        type: 'ORDER_CREATED',
+        data: { orderId: id, weight: order.weight }
+      });
+
       logger.info('Order created', { orderId: id, weight, status: order.status });
 
       res.status(201).json({
@@ -174,6 +180,11 @@ class OrderController {
         dataService.saveCouriers(couriers)
       ]);
 
+      eventBus.publish({
+        type: 'ORDER_ASSIGNED',
+        data: { orderId: id, courierId }
+      });
+
       logger.info('Order assigned', { orderId: id, courierId });
 
       res.json({
@@ -225,6 +236,10 @@ class OrderController {
             courier.completeOrder();
             await dataService.saveCouriers(couriers);
           }
+          eventBus.publish({
+            type: 'ORDER_COMPLETED',
+            data: { orderId: id, courierId: order.assignedCourierId }
+          });
           break;
         case OrderStatus.CANCELLED:
           order.cancel();
@@ -235,6 +250,10 @@ class OrderController {
             assignedCourier.markAsFree();
             await dataService.saveCouriers(couriers);
           }
+          eventBus.publish({
+            type: 'ORDER_CANCELLED',
+            data: { orderId: id }
+          });
           break;
         default:
           return res.status(400).json({
@@ -283,6 +302,11 @@ class OrderController {
         order.cancel();
         await dataService.saveOrders(orders);
         queueManager.removeOrder(id);
+
+        eventBus.publish({
+          type: 'ORDER_CANCELLED',
+          data: { orderId: id }
+        });
 
         logger.info('Order cancelled', { orderId: id });
 

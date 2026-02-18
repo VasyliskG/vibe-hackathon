@@ -37,6 +37,10 @@ class DataService {
   async loadOrders() {
     try {
       const data = await fs.readFile(this._ordersFile, 'utf-8');
+      if (!data.trim()) {
+        logger.info('Orders file is empty, returning empty array');
+        return [];
+      }
       const json = JSON.parse(data);
       logger.info('Orders loaded', { count: json.length });
       return json;
@@ -64,6 +68,10 @@ class DataService {
   async loadCouriers() {
     try {
       const data = await fs.readFile(this._couriersFile, 'utf-8');
+      if (!data.trim()) {
+        logger.info('Couriers file is empty, returning empty array');
+        return [];
+      }
       const json = JSON.parse(data);
       logger.info('Couriers loaded', { count: json.length });
       return json;
@@ -91,6 +99,10 @@ class DataService {
   async loadMap() {
     try {
       const data = await fs.readFile(this._mapFile, 'utf-8');
+      if (!data.trim()) {
+        logger.info('Map file is empty');
+        return null;
+      }
       const json = JSON.parse(data);
       logger.info('Map loaded');
       return json;

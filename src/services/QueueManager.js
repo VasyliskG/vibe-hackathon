@@ -1,4 +1,5 @@
 const logger = require('../utils/logger');
+const eventBus = require('../realtime/eventBus/EventBus');
 
 /**
  * QueueManager - Manages FIFO order queue
@@ -27,6 +28,14 @@ class QueueManager {
       orderId: order.id,
       queueSize: this._queue.length
     });
+    eventBus.publish({
+      type: 'ORDER_QUEUED',
+      data: { orderId: order.id, queueSize: this._queue.length }
+    });
+    eventBus.publish({
+      type: 'QUEUE_UPDATED',
+      data: { queueSize: this._queue.length }
+    });
     return true;
   }
 
@@ -44,6 +53,10 @@ class QueueManager {
     logger.info('Order removed from queue', {
       orderId,
       queueSize: this._queue.length
+    });
+    eventBus.publish({
+      type: 'QUEUE_UPDATED',
+      data: { queueSize: this._queue.length }
     });
     return true;
   }
@@ -99,6 +112,10 @@ class QueueManager {
     const previousSize = this._queue.length;
     this._queue = [];
     logger.info('Queue cleared', { previousSize });
+    eventBus.publish({
+      type: 'QUEUE_UPDATED',
+      data: { queueSize: 0 }
+    });
   }
 
   /**
@@ -110,4 +127,3 @@ class QueueManager {
 }
 
 module.exports = QueueManager;
-

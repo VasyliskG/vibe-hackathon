@@ -116,21 +116,22 @@ describe('Courier Domain', () => {
       expect(courier.canCarryWeight(6)).toBe(false);
     });
 
-    test('bicycle should carry up to 10kg', () => {
+    test('bicycle should carry up to 15kg', () => {
       const location = new Location(10, 20);
       const courier = new Courier('courier-1', location, 'bicycle');
 
       expect(courier.canCarryWeight(10)).toBe(true);
-      expect(courier.canCarryWeight(11)).toBe(false);
+      expect(courier.canCarryWeight(15)).toBe(true);
+      expect(courier.canCarryWeight(16)).toBe(false);
     });
 
-    test('car should carry up to 100kg', () => {
+    test('car should carry up to 50kg', () => {
       const location = new Location(10, 20);
       const courier = new Courier('courier-1', location, 'car');
 
+      expect(courier.canCarryWeight(25)).toBe(true);
       expect(courier.canCarryWeight(50)).toBe(true);
-      expect(courier.canCarryWeight(100)).toBe(true);
-      expect(courier.canCarryWeight(101)).toBe(false);
+      expect(courier.canCarryWeight(51)).toBe(false);
     });
   });
 

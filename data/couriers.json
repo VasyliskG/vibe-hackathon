@@ -1,62 +1,98 @@
 [
   {
     "id": "courier-1",
-    "status": "Free",
+    "status": "Busy",
     "transportType": "walker",
     "maxWeight": 5,
     "completedOrdersToday": 0,
-    "currentOrderId": null,
+    "currentOrderId": "test-order-get-1771368188922",
     "coordinates": {
-      "x": 90,
-      "y": 62
+      "x": 62,
+      "y": 98
     }
   },
   {
     "id": "courier-2",
-    "status": "Free",
+    "status": "Busy",
     "transportType": "bicycle",
     "maxWeight": 15,
     "completedOrdersToday": 0,
-    "currentOrderId": null,
+    "currentOrderId": "test-order-get-1771367910771",
     "coordinates": {
-      "x": 87,
-      "y": 94
+      "x": 97,
+      "y": 2
     }
   },
   {
     "id": "courier-3",
-    "status": "Free",
+    "status": "Busy",
     "transportType": "bicycle",
     "maxWeight": 15,
     "completedOrdersToday": 0,
-    "currentOrderId": null,
+    "currentOrderId": "test-order-assign-1771366882917",
     "coordinates": {
-      "x": 30,
-      "y": 78
+      "x": 21,
+      "y": 97
     }
   },
   {
     "id": "courier-4",
-    "status": "Free",
+    "status": "Busy",
     "transportType": "scooter",
     "maxWeight": 50,
     "completedOrdersToday": 0,
-    "currentOrderId": null,
+    "currentOrderId": "test-order-1771366882853",
     "coordinates": {
-      "x": 52,
-      "y": 61
+      "x": 24,
+      "y": 11
     }
   },
   {
     "id": "courier-5",
-    "status": "Free",
+    "status": "Busy",
     "transportType": "car",
     "maxWeight": 50,
     "completedOrdersToday": 0,
-    "currentOrderId": null,
+    "currentOrderId": "test-order-assign-1771367910826",
     "coordinates": {
-      "x": 88,
-      "y": 80
+      "x": 95,
+      "y": 37
+    }
+  },
+  {
+    "id": "test-courier-1771366882897",
+    "status": "Busy",
+    "transportType": "bicycle",
+    "maxWeight": 15,
+    "completedOrdersToday": 0,
+    "currentOrderId": "test-order-get-1771366882872",
+    "coordinates": {
+      "x": 20,
+      "y": 20
+    }
+  },
+  {
+    "id": "test-courier-1771367910801",
+    "status": "Busy",
+    "transportType": "bicycle",
+    "maxWeight": 15,
+    "completedOrdersToday": 0,
+    "currentOrderId": "test-order-1771367910749",
+    "coordinates": {
+      "x": 20,
+      "y": 20
+    }
+  },
+  {
+    "id": "test-courier-1771368188951",
+    "status": "Busy",
+    "transportType": "bicycle",
+    "maxWeight": 15,
+    "completedOrdersToday": 0,
+    "currentOrderId": "test-order-1771368188903",
+    "coordinates": {
+      "x": 20,
+      "y": 20
     }
   }
 ]

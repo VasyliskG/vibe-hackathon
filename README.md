@@ -1,14 +1,14 @@
-# 🚀 Stage 4: Production-Ready Delivery System
+# 🚀 Stage 5: Realtime Dispatch System
 
 Production-ready REST API для системи автоматичного розподілу замовлень з повним lifecycle management, персистентністю даних та моніторингом.
 
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-green.svg)](https://nodejs.org/)  
-[![Stage](https://img.shields.io/badge/Stage-4%20Production-success.svg)](https://github.com/VasyliskG/vibe-hackathon)  
+[![Stage](https://img.shields.io/badge/Stage-5%20Production-success.svg)](https://github.com/VasyliskG/vibe-hackathon)  
 [![Tests](https://img.shields.io/badge/Tests-Jest-red.svg)](https://jestjs.io/)
 
 ---
 
-## ✨ Stage 4 Features
+## ✨ Stage 5 Features
 
 ✅ **REST API** - Express.js з повним CRUD  
 ✅ **Order Lifecycle** - 6 статусів замовлень (pending → assigned → picked_up → in_transit → delivered)  
@@ -19,6 +19,11 @@ Production-ready REST API для системи автоматичного ро�
 ✅ **Automated Tests** - Unit + Integration тести (Jest)  
 ✅ **Error Handling** - Глобальний обробник помилок  
 ✅ **Input Validation** - express-validator для всіх endpoints  
+✅ **Realtime Dispatch** - WebSocket API для миттєвого оновлення статусів  
+✅ **EventBus Architecture** - Подієва архітектура для обробки подій системи  
+✅ **Live Dashboard** - Односторінковий додаток для моніторингу в реальному часі  
+✅ **SLA Monitoring** - Моніторинг порушень угод про рівень обслуговування  
+✅ **Simulation Service** - Сервіс для симуляції навантаження та тестування
 
 ---
 
@@ -70,8 +75,8 @@ npm test -- --coverage
 ```json
 {
   "service": "Vibe Delivery System",
-  "stage": "4 - Production Ready",
-  "version": "4.0.0",
+  "stage": "5 - Production Ready",
+  "version": "5.0.0",
   "status": "running"
 }
 ```
@@ -177,6 +182,80 @@ Query params: `?status=Free|Busy`
 
 ---
 
+## 🌐 Realtime Dashboard
+
+Open `http://localhost:3000` after starting the server.
+
+Dashboard panels:
+- Live Map (couriers + orders)
+- Realtime Statistics
+- Activity Feed
+- Queue Monitor
+
+---
+
+## 🔌 WebSocket API
+
+- Endpoint: `ws://localhost:3000`
+- Path: `/ws`
+- Auth: JWT token in `auth.token`
+
+### Example (client)
+
+```js
+const socket = io('http://localhost:3000', {
+  path: '/ws',
+  auth: { token: '<JWT>' }
+});
+```
+
+### Events
+
+- `ORDER_CREATED`
+- `ORDER_ASSIGNED`
+- `ORDER_COMPLETED`
+- `ORDER_CANCELLED`
+- `ORDER_QUEUED`
+- `COURIER_STATUS_CHANGED`
+- `QUEUE_UPDATED`
+- `SLA_VIOLATION`
+
+---
+
+## 🧪 Simulation
+
+### Start
+
+```bash
+curl -X POST http://localhost:3000/api/simulation/start \
+  -H "Content-Type: application/json" \
+  -d '{"ordersCount":100,"couriersCount":20}'
+```
+
+### Stop
+
+```bash
+curl -X POST http://localhost:3000/api/simulation/stop
+```
+
+### Status
+
+```bash
+curl http://localhost:3000/api/simulation/status
+```
+
+---
+
+## 🔐 WebSocket Token (dev only)
+
+```bash
+curl -X POST http://localhost:3000/api/system/token \
+  -H "Content-Type: application/json" \
+  -d '{"userId":"dashboard","role":"ADMIN"}'
+```
+
+---
+
 ## 🔧 Configuration (.env)
 
 ```env
@@ -256,5 +335,4 @@ ISC
 
 **VasyliskG**
 
-🚀 Built for Vibe Hackathon - Stage 4
-
+🚀 Built for Vibe Hackathon - Stage 5
